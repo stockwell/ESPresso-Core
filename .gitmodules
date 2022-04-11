@@ -7,3 +7,6 @@
 [submodule "vendor/ESPresso-UI"]
 	path = vendor/ESPresso-UI
 	url = git@github.com:stockwell/ESPresso-UI.git
+[submodule "vendor/esp-idf"]
+	path = vendor/esp-idf
+	url = git@github.com:espressif/esp-idf.git

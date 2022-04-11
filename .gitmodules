@@ -1,0 +1,9 @@
+[submodule "vendor/lv_port_esp32"]
+	path = vendor/lv_port_esp32
+	url = git@github.com:stockwell/lv_port_esp32.git
+[submodule "vendor/QuickPID"]
+	path = vendor/QuickPID
+	url = git@github.com:stockwell/QuickPID.git
+[submodule "vendor/ESPresso-UI"]
+	path = vendor/ESPresso-UI
+	url = git@github.com:stockwell/ESPresso-UI.git

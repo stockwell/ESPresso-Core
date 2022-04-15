@@ -35,4 +35,5 @@
 .DS_Store
 Build
 sdkconfig.old
+*/Build
 

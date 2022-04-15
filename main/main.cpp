@@ -31,6 +31,7 @@
 
 #include "EspressoUI.hpp"
 #include "BoilerController.hpp"
+#include "SettingsManager.hpp"
 
 /*********************
  *      DEFINES
@@ -104,8 +105,6 @@ static void guiTask(void *pvParameter) {
      * NOTE: buf2 == NULL when using monochrome displays. */
     lv_disp_draw_buf_init(&disp_buf, buf1, buf2, size_in_px);
 
-
-
     /* When using a monochrome display we need to register the callbacks:
      * - rounder_cb
      * - set_px_cb */
@@ -135,9 +134,16 @@ static void guiTask(void *pvParameter) {
     ESP_ERROR_CHECK(esp_timer_create(&periodic_timer_args, &periodic_timer));
     ESP_ERROR_CHECK(esp_timer_start_periodic(periodic_timer, LV_TICK_PERIOD_MS * 1000));
 
-    BoilerController boiler;
-    EspressoUI ui;
+    auto& settings = SettingsManager::get();
+
+    settings["BrewTemp"]  = 93;
+    settings["SteamTemp"] = 130;
+
+    BoilerController    boiler;
+    EspressoUI          ui;
+
     ui.init(&boiler);
+    boiler.setBoilerTargetTemp(settings["BrewTemp"].getAs<int>());
     
     while (1) {
         /* Delay 1 tick (assumes FreeRTOS tick is 10ms */

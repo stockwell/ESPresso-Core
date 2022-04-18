@@ -15,6 +15,12 @@ public:
 class BoilerController
 {
 public:
+    enum class BoilerState
+    {
+        Heating,
+        Read,
+    };
+    
     BoilerController();
 
     void registerBoilerTemperatureDelegate(BoilerTemperatureDelegate* delegate);

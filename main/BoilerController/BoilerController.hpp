@@ -18,7 +18,7 @@ public:
     enum class BoilerState
     {
         Heating,
-        Read,
+        Ready,
     };
     
     BoilerController();

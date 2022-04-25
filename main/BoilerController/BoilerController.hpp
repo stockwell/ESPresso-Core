@@ -8,38 +8,44 @@
 class BoilerTemperatureDelegate
 {
 public:
-    virtual void onBoilerCurrentTempChanged(float temp) { };
-    virtual void onBoilerTargetTempChanged(float temp) { };
+	virtual void onBoilerCurrentTempChanged(float temp)	{ };
+	virtual void onBoilerTargetTempChanged(float temp) { };
 };
 
 class BoilerController
 {
 public:
-    enum class BoilerState
-    {
-        Heating,
-        Ready,
-    };
-    
-    BoilerController();
+	enum class BoilerState
+	{
+		Heating,
+		Ready,
+	};
 
-    void registerBoilerTemperatureDelegate(BoilerTemperatureDelegate* delegate);
-    void deregisterBoilerTemperatureDelegate(BoilerTemperatureDelegate* delegate);
+	using PIDTerms = std::tuple<float, float, float>;
 
-    void setBoilerTargetTemp(float temp);
-    void setBoilerCurrentTemp(float temp);
+	BoilerController();
 
-    void tick();
+	void registerBoilerTemperatureDelegate(BoilerTemperatureDelegate* delegate);
+	void deregisterBoilerTemperatureDelegate(BoilerTemperatureDelegate* delegate);
+
+	void setBoilerTargetTemp(float temp);
+	void setBoilerCurrentTemp(float temp);
+
+	float getBoilerTargetTemp() const { return m_targetTemp; }
+	float getBoilerCurrentTemp() const { return m_currentTemp; }
+
+	void setPIDTerms(PIDTerms terms);
+	PIDTerms getPIDTerms() const { return m_terms; }
+
+	void tick();
 
 private:
-    std::set<BoilerTemperatureDelegate*>    m_delegates;
-    std::unique_ptr<QuickPID>               m_pid;
+	std::set<BoilerTemperatureDelegate*> m_delegates;
+	std::unique_ptr<QuickPID> m_pid;
 
-    float m_targetTemp = 100.0;
-    float m_currentTemp = 0.0;
-    float m_outputPower = 0.0;
+	float m_targetTemp		= 0.0;
+	float m_currentTemp		= 0.0;
+	float m_outputPower		= 0.0;
 
-    float m_P;
-    float m_I;
-    float m_D;
+	PIDTerms m_terms;
 };

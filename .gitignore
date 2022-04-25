@@ -36,4 +36,5 @@
 Build
 sdkconfig.old
 */Build
-
+.idea
+cmake-build*

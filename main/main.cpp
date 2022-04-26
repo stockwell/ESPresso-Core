@@ -6,14 +6,14 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_freertos_hooks.h"
-#include "freertos/semphr.h"
 #include "esp_system.h"
 #include "mdns.h"
 #include "nvs_flash.h"
-#include "protocol_examples_common.h"
+
 #include "RESTServer/Server.hpp"
 
 #include "BoilerEventLoop.hpp"
+#include "Wifi.hpp"
 
 /*********************
  *      DEFINES
@@ -23,17 +23,14 @@
 /**********************
  *  STATIC PROTOTYPES
  **********************/
-static void guiTask(void* pvParameter);
+static void mainTask(void* pvParameter);
 
 /**********************
  *   APPLICATION MAIN
  **********************/
 extern "C" void app_main()
 {
-	/* If you want to use a task to create the graphic, you NEED to create a Pinned task
-	 * Otherwise there can be problem such as memory corruption and so on.
-	 * NOTE: When not using Wi-Fi nor Bluetooth you can pin the guiTask to core 0 */
-	xTaskCreatePinnedToCore(guiTask, "main", 4096, NULL, 0, NULL, 1);
+	xTaskCreatePinnedToCore(mainTask, "main", 4096, NULL, 0, NULL, 1);
 }
 
 static void initialise_mdns(void)
@@ -51,7 +48,7 @@ static void initialise_mdns(void)
 		sizeof(serviceTxtData) / sizeof(serviceTxtData[0])));
 }
 
-static void guiTask(void* pvParameter)
+static void mainTask(void* pvParameter)
 {
 	(void)pvParameter;
 
@@ -64,7 +61,7 @@ static void guiTask(void* pvParameter)
 	ESP_ERROR_CHECK(esp_event_loop_create_default());
 	initialise_mdns();
 
-	ESP_ERROR_CHECK(example_connect());
+	Wifi::InitSoftAP();
 
 	auto boilerEventLoop = std::make_unique<BoilerEventLoop>();
 	boilerEventLoop->setBoilerTemperature(93.1f);

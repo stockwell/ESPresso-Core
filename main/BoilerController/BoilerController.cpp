@@ -38,6 +38,8 @@ void BoilerController::setBoilerCurrentTemp(float temp)
 	if (m_currentTemp == temp)
 		return;
 
+	printf("setBoilerCurrentTemp: %f\n", temp);
+
 	m_currentTemp = temp;
 
 	for (auto delegate: m_delegates)
@@ -68,9 +70,4 @@ void BoilerController::setPIDTerms(PIDTerms terms)
 void BoilerController::tick()
 {
 	m_pid->Compute();
-
-	if (m_outputPower > 0)
-		setBoilerCurrentTemp(m_currentTemp + (0.01 * m_outputPower));
-	else
-		setBoilerCurrentTemp(m_currentTemp - (0.1));
 }

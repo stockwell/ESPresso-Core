@@ -13,6 +13,7 @@
 #include "RESTServer/Server.hpp"
 
 #include "BoilerEventLoop.hpp"
+#include "TemperatureEventLoop.hpp"
 #include "Wifi.hpp"
 
 /*********************
@@ -65,6 +66,8 @@ static void mainTask(void* pvParameter)
 
 	auto boilerEventLoop = std::make_unique<BoilerEventLoop>();
 	boilerEventLoop->setBoilerTemperature(93.1f);
+
+	auto temperatureEventLoop = std::make_unique<TemperatureEventLoop>(boilerEventLoop.get());
 
 	ESP_ERROR_CHECK(start_rest_server(boilerEventLoop.get()));
 

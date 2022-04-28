@@ -11,6 +11,7 @@ public:
 	BoilerEventLoop();
 	virtual ~BoilerEventLoop() = default;
 
+	void						updateBoilerTemperature(float temperature);
 	void						setBoilerTemperature(float temperature);
 	float						getBoilerTemperature();
 

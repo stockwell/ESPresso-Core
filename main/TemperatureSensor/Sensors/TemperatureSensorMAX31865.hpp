@@ -10,7 +10,7 @@ public:
 	explicit TemperatureSensorMAX31865();
 	virtual ~TemperatureSensorMAX31865() = default;
 
-	float GetTemperature() const override;
+	float GetTemperature() override;
 
 private:
 	Max31865	m_sensor;

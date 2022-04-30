@@ -25,7 +25,7 @@ TemperatureEventLoop::TemperatureEventLoop(BoilerEventLoop* boilerEventLoop)
 	m_timer->start();
 }
 
-void TemperatureEventLoop::EventHandler(int32_t eventId, void* data)
+void TemperatureEventLoop::eventHandler(int32_t eventId, void* data)
 {
 	switch (eventId)
 	{

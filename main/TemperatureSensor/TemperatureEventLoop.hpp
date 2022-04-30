@@ -13,7 +13,7 @@ public:
 	virtual ~TemperatureEventLoop() = default;
 
 protected:
-	void						EventHandler(int32_t eventId, void* data) override;
+	void eventHandler(int32_t eventId, void* data) override;
 
 private:
 	std::unique_ptr<Timer>				m_timer;

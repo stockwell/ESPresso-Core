@@ -18,7 +18,7 @@ BoilerController::BoilerController()
 	m_pid = std::make_unique<QuickPID>(&m_currentTemp, &m_outputPower, &m_targetTemp, Kp, Ki, Kd, QuickPID::Action::direct);
 
 	m_pid->SetSampleTimeUs(10000);
-	m_pid->SetOutputLimits(0, 50);
+	m_pid->SetOutputLimits(0, 1024);
 	m_pid->SetMode(QuickPID::Control::automatic);
 }
 
@@ -72,6 +72,5 @@ void BoilerController::tick()
 {
 	m_pid->Compute();
 
-	m_ssrController.setNextOnCycles(static_cast<int>(m_outputPower));
-	m_ssrController.tick();
+	m_ssrController.tick(static_cast<int>(m_outputPower));
 }

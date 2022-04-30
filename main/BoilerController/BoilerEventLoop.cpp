@@ -65,7 +65,7 @@ BoilerEventLoop::BoilerEventLoop()
 	m_timer->start();
 }
 
-void BoilerEventLoop::EventHandler(int32_t eventId, void* data)
+void BoilerEventLoop::eventHandler(int32_t eventId, void* data)
 {
 	switch (eventId)
 	{

@@ -5,17 +5,20 @@ namespace
 	constexpr float kDefaultKp = 500.0f;
 	constexpr float kDefaultKi = 500.0f;
 	constexpr float kDefaultKd = 1.0f;
+
+	constexpr int kGPIOPin_SSR = 23;
 }
 
 BoilerController::BoilerController()
-	: m_terms(kDefaultKp, kDefaultKi, kDefaultKd)
+	: m_ssrController(static_cast<gpio_num_t>(kGPIOPin_SSR))
+	, m_terms(kDefaultKp, kDefaultKi, kDefaultKd)
 {
 	auto [Kp, Ki, Kd] = m_terms;
 
 	m_pid = std::make_unique<QuickPID>(&m_currentTemp, &m_outputPower, &m_targetTemp, Kp, Ki, Kd, QuickPID::Action::direct);
 
 	m_pid->SetSampleTimeUs(10000);
-	m_pid->SetOutputLimits(0, 20);
+	m_pid->SetOutputLimits(0, 50);
 	m_pid->SetMode(QuickPID::Control::automatic);
 }
 
@@ -37,8 +40,6 @@ void BoilerController::setBoilerCurrentTemp(float temp)
 {
 	if (m_currentTemp == temp)
 		return;
-
-	printf("setBoilerCurrentTemp: %f\n", temp);
 
 	m_currentTemp = temp;
 
@@ -70,4 +71,7 @@ void BoilerController::setPIDTerms(PIDTerms terms)
 void BoilerController::tick()
 {
 	m_pid->Compute();
+
+	m_ssrController.setNextOnCycles(static_cast<int>(m_outputPower));
+	m_ssrController.tick();
 }

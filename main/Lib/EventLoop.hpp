@@ -11,7 +11,7 @@ public:
 	void						eventPost(int32_t eventId, size_t dataSize = 0, void* data = nullptr);
 
 protected:
-	virtual void				EventHandler(int32_t eventId, void* data) = 0;
+	virtual void				eventHandler(int32_t eventId, void* data) = 0;
 	esp_event_loop_handle_t		m_eventLoopHandle;
 
 private:

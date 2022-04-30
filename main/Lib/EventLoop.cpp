@@ -34,5 +34,5 @@ void EventLoop::eventAdapter(void* event_handler_arg, esp_event_base_t event_bas
 {
 	auto eventLoop = static_cast<EventLoop*>(event_handler_arg);
 
-	eventLoop->EventHandler(event_id, event_data);
+	eventLoop->eventHandler(event_id, event_data);
 }

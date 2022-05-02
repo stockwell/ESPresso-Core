@@ -9,7 +9,7 @@ EventLoop::EventLoop(const char* eventBase)
 	{
 		.queue_size = 10,
 		.task_name = eventBase,
-		.task_priority = uxTaskPriorityGet(NULL),
+		.task_priority = 1,
 		.task_stack_size = 2048,
 		.task_core_id = tskNO_AFFINITY
 	};

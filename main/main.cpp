@@ -73,8 +73,7 @@ static void mainTask(void* pvParameter)
 
 	while (1)
 	{
-		/* Delay 1 tick (assumes FreeRTOS tick is 10ms */
-		vTaskDelay(pdMS_TO_TICKS(100));
+		vTaskDelay(portMAX_DELAY);
 	}
 
 	vTaskDelete(NULL);

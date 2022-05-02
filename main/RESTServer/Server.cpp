@@ -163,7 +163,7 @@ esp_err_t start_rest_server(BoilerEventLoop* boiler)
 
 	rest_context->boilerAPI = boiler;
 
-	httpd_handle_t server = NULL;
+	httpd_handle_t server = nullptr;
 	httpd_config_t config = HTTPD_DEFAULT_CONFIG();
 	config.uri_match_fn = httpd_uri_match_wildcard;
 

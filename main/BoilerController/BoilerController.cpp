@@ -72,5 +72,5 @@ void BoilerController::tick()
 {
 	m_pid->Compute();
 
-	m_ssrController.tick(static_cast<int>(m_outputPower));
+	m_ssrController.update(static_cast<int>(m_outputPower));
 }

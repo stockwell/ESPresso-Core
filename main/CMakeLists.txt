@@ -4,6 +4,8 @@ file(GLOB_RECURSE SOURCES *.c *.cpp)
 set(INCLUDES
         .
         BoilerController
+        PressureSensor
+        PressureSensor/Sensors
         TemperatureSensor
         TemperatureSensor/Sensors
 )

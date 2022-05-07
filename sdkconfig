@@ -1189,6 +1189,22 @@ CONFIG_WPA_MBEDTLS_CRYPTO=y
 # CONFIG_WPA_WPS_STRICT is not set
 # CONFIG_WPA_11KV_SUPPORT is not set
 # end of Supplicant
+
+#
+# ESPresso Configuration
+#
+
+#
+# Temperature Sensor
+#
+CONFIG_BOILER_TEMP_SENSOR_MAX31865=y
+CONFIG_MAX31865_PIN_MISO=12
+CONFIG_MAX31865_PIN_MOSI=14
+CONFIG_MAX31865_PIN_SCLK=13
+CONFIG_MAX31865_PIN_CS=27
+CONFIG_MAX31865_PIN_DRDY=26
+# end of Temperature Sensor
+# end of ESPresso Configuration
 # end of Component config
 
 #

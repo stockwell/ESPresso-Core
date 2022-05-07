@@ -9,8 +9,7 @@
 class TemperatureEventLoop : public EventLoop
 {
 public:
-	TemperatureEventLoop(BoilerEventLoop* boilerEventLoop);
-	virtual ~TemperatureEventLoop() = default;
+	explicit TemperatureEventLoop(BoilerEventLoop* boilerEventLoop);
 
 protected:
 	void eventHandler(int32_t eventId, void* data) override;

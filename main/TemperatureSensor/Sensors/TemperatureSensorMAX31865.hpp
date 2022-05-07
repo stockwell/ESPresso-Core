@@ -8,7 +8,6 @@ class TemperatureSensorMAX31865 : public TemperatureSensor
 {
 public:
 	explicit TemperatureSensorMAX31865();
-	virtual ~TemperatureSensorMAX31865() = default;
 
 	float GetTemperature() override;
 

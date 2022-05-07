@@ -1,10 +1,13 @@
 #include "TemperatureEventLoop.hpp"
 
+#if CONFIG_BOILER_TEMP_SENSOR_MAX31865
 #include "TemperatureSensorMAX31865.hpp"
+using BoilerTemperatureSensor = TemperatureSensorMAX31865;
+#endif
 
 namespace
 {
-	constexpr auto kTemperaturePollPeriod = 10;
+	constexpr auto kTemperaturePollPeriod = 50;
 
 	enum Events
 	{
@@ -16,7 +19,7 @@ TemperatureEventLoop::TemperatureEventLoop(BoilerEventLoop* boilerEventLoop)
 	: EventLoop("TemperatureEvent")
 	, m_boilerEventLoop(boilerEventLoop)
 {
-	m_sensor = std::make_unique<TemperatureSensorMAX31865>();
+	m_sensor = std::make_unique<BoilerTemperatureSensor>();
 
 	m_timer = std::make_unique<Timer>(kTemperaturePollPeriod, [this]() {
 		eventPost(Events::TemperaturePollTimerElapsed);

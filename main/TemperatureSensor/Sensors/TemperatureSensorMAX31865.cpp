@@ -2,11 +2,11 @@
 
 namespace
 {
-	// TODO: Get from SDKConfig
-	constexpr auto kGPIOPinMISO = 13;
-	constexpr auto kGPIOPinMOSI = 14;
-	constexpr auto kGPIOPinSCLK = 15;
-	constexpr auto kGPIOPinCS   = 16;
+	constexpr auto kGPIOPinMISO = CONFIG_MAX31865_PIN_MISO;
+	constexpr auto kGPIOPinMOSI = CONFIG_MAX31865_PIN_MOSI;
+	constexpr auto kGPIOPinSCLK = CONFIG_MAX31865_PIN_SCLK;
+	constexpr auto kGPIOPinCS   = CONFIG_MAX31865_PIN_CS;
+	constexpr auto kGPIOPinDRDY = CONFIG_MAX31865_PIN_DRDY;
 
 	constexpr auto kRTDMin = 0x2000;
 	constexpr auto kRTDMax = 0x2500;
@@ -15,14 +15,14 @@ namespace
 }
 
 TemperatureSensorMAX31865::TemperatureSensorMAX31865()
-	: m_sensor(kGPIOPinMISO, kGPIOPinMOSI, kGPIOPinSCLK, kGPIOPinCS)
+	: m_sensor(kGPIOPinMISO, kGPIOPinMOSI, kGPIOPinSCLK, kGPIOPinCS, kGPIOPinDRDY)
 {
 	const max31865_config_t config =
 	{
 		.vbias			= true,
 		.autoConversion	= true,
-		.nWires			= Max31865NWires::Three,
-		.faultDetection	= Max31865FaultDetection::AutoDelay,
+		.nWires			= Max31865NWires::Two,
+		.faultDetection	= Max31865FaultDetection::NoAction,
 		.filter			= Max31865Filter::Hz50,
 	};
 

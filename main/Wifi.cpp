@@ -9,6 +9,8 @@
 
 #include "Wifi.hpp"
 
+#include "mdns.h"
+
 namespace
 {
 	constexpr std::string_view kSoftAP_ssid 	= "CoffeeDirect";
@@ -37,4 +39,18 @@ void Wifi::InitSoftAP()
 	ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &wifi_config));
 	ESP_ERROR_CHECK(esp_wifi_set_bandwidth(WIFI_IF_AP, WIFI_BW_HT40));
 	ESP_ERROR_CHECK(esp_wifi_start());
+}
+
+void Wifi::InitMDNS()
+{
+	mdns_init();
+	mdns_hostname_set("COFFEE");
+	mdns_instance_name_set("COFFEE");
+
+	mdns_txt_item_t serviceTxtData[] = {
+		{"board", "esp32"},
+	};
+
+	ESP_ERROR_CHECK(mdns_service_add("COFFEE", "_http", "_tcp", 80, serviceTxtData,
+		sizeof(serviceTxtData) / sizeof(serviceTxtData[0])));
 }

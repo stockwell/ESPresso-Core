@@ -3,4 +3,5 @@
 namespace Wifi
 {
 	void InitSoftAP();
+	void InitMDNS();
 }

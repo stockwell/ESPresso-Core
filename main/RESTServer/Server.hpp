@@ -2,4 +2,8 @@
 
 #include "BoilerEventLoop.hpp"
 
-extern esp_err_t start_rest_server(BoilerEventLoop* boiler);
+class RESTServer
+{
+public:
+	explicit RESTServer(BoilerEventLoop* boiler);
+};

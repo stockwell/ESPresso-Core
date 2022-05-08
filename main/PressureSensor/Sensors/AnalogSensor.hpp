@@ -11,7 +11,7 @@ class AnalogSensor : public PressureSensor
 public:
 	explicit AnalogSensor();
 
-	float GetPressure();
+	float GetPressure() override;
 
 private:
 	std::unique_ptr<ADS1115>	m_ADC;

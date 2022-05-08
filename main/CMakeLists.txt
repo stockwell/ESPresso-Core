@@ -8,6 +8,7 @@ set(INCLUDES
         PressureSensor/Sensors
         TemperatureSensor
         TemperatureSensor/Sensors
+        ADC
 )
 
 set(REQUIRES

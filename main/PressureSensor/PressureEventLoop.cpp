@@ -12,9 +12,8 @@ namespace
 	};
 }
 
-PressureEventLoop::PressureEventLoop(BoilerEventLoop* boilerEventLoop)
+PressureEventLoop::PressureEventLoop()
 	: EventLoop("PressureEvent")
-	, m_boilerEventLoop(boilerEventLoop)
 {
 	m_sensor = std::make_unique<AnalogSensor>();
 
@@ -31,6 +30,7 @@ void PressureEventLoop::eventHandler(int32_t eventId, void* data)
 	{
 	case Events::PressurePollTimerElapsed:
 		// Update pressure in pump controller?
+		printf("Pressure: %.02f\n", m_sensor->GetPressure());
 		break;
 	}
 }

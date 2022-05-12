@@ -10,7 +10,7 @@ namespace
 }
 
 BoilerController::BoilerController()
-	: m_ssrController(static_cast<gpio_num_t>(kGPIOPin_SSR))
+	: m_ssr(static_cast<gpio_num_t>(kGPIOPin_SSR))
 	, m_terms(kDefaultKp, kDefaultKi, kDefaultKd)
 {
 	auto [Kp, Ki, Kd] = m_terms;
@@ -72,5 +72,5 @@ void BoilerController::tick()
 {
 	m_pid->Compute();
 
-	m_ssrController.update(static_cast<int>(m_outputPower));
+	m_ssr.update(static_cast<int>(m_outputPower));
 }

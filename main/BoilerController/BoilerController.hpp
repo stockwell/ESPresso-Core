@@ -4,7 +4,7 @@
 #include <memory>
 
 #include "QuickPID.h"
-#include "SSRController.hpp"
+#include "SSR.hpp"
 
 class BoilerTemperatureDelegate
 {
@@ -43,7 +43,7 @@ public:
 private:
 	std::set<BoilerTemperatureDelegate*> m_delegates;
 	std::unique_ptr<QuickPID> m_pid;
-	SSRController m_ssrController;
+	SSR m_ssr;
 
 	float m_targetTemp		= 0.0;
 	float m_currentTemp		= 0.0;

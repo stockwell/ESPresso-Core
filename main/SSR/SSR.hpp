@@ -1,9 +1,9 @@
 #include "driver/gpio.h"
 
-class SSRController
+class SSR
 {
 public:
-	explicit SSRController(gpio_num_t GPIONum);
+	explicit SSR(gpio_num_t GPIONum);
 
 	void update(uint16_t duty);
 };

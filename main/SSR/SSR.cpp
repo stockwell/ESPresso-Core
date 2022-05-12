@@ -1,4 +1,4 @@
-#include "SSRController.hpp"
+#include "SSR.hpp"
 
 #include "driver/ledc.h"
 
@@ -12,7 +12,7 @@ namespace
 
 }
 
-SSRController::SSRController(gpio_num_t GPIONum /*TODO: AC Period*/)
+SSR::SSR(gpio_num_t GPIONum /*TODO: AC Period*/)
 {
 	ledc_timer_config_t ledc_timer = {
 		.speed_mode			= kLEDC_Mode,
@@ -36,7 +36,7 @@ SSRController::SSRController(gpio_num_t GPIONum /*TODO: AC Period*/)
 }
 
 
-void SSRController::update(uint16_t duty)
+void SSR::update(uint16_t duty)
 {
 	ESP_ERROR_CHECK(ledc_set_duty(kLEDC_Mode, kLEDC_Channel, duty));
 	ESP_ERROR_CHECK(ledc_update_duty(kLEDC_Mode, kLEDC_Channel));

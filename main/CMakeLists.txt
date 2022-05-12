@@ -9,6 +9,7 @@ set(INCLUDES
         TemperatureSensor
         TemperatureSensor/Sensors
         ADC
+        SSR
 )
 
 set(REQUIRES

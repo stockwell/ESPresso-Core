@@ -132,7 +132,7 @@ int16_t ADS1115::getRaw()
 		if (auto err = writeRegister(CONFIG, m_config.reg); err != 0)
 		{
 			ESP_LOGE(__FUNCTION__, "could not write to device: %s", esp_err_to_name(err));
-			if (m_rdyPin)
+			if (m_rdyPin != GPIO_NUM_NC)
 			{
 				gpio_isr_handler_remove(m_rdyPin);
 				vSemaphoreDelete(m_rdySemaphore);

@@ -6,7 +6,7 @@ namespace
 	constexpr auto kGPIOPinMOSI = CONFIG_MAX31865_PIN_MOSI;
 	constexpr auto kGPIOPinSCLK = CONFIG_MAX31865_PIN_SCLK;
 	constexpr auto kGPIOPinCS   = CONFIG_MAX31865_PIN_CS;
-	constexpr auto kGPIOPinDRDY = CONFIG_MAX31865_PIN_DRDY;
+	constexpr auto kGPIOPinDRDY = -1;
 
 	constexpr auto kRTDMin = 0x2000;
 	constexpr auto kRTDMax = 0x2500;

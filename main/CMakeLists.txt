@@ -10,6 +10,7 @@ set(INCLUDES
         TemperatureSensor/Sensors
         ADC
         SSR
+        TRIAC
 )
 
 set(REQUIRES

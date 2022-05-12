@@ -29,7 +29,7 @@ static void mainTask(void* pvParameter)
 	auto boilerEventLoop = std::make_unique<BoilerEventLoop>();
 	auto temperatureEventLoop = std::make_unique<TemperatureEventLoop>(boilerEventLoop.get());
 	auto pressureEventLoop = std::make_unique<PressureEventLoop>();
-	auto restServer = std::make_unique<RESTServer>(boilerEventLoop.get());
+	auto restServer = std::make_unique<RESTServer>(boilerEventLoop.get(), pressureEventLoop.get());
 
 	boilerEventLoop->setBoilerTemperature(93.1f);
 

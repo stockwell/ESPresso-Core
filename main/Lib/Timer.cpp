@@ -10,7 +10,10 @@ Timer::Timer(uint32_t period, std::function<void()> cb, bool periodic)
 		callbackAdapter);
 
 	if (! m_timerHandle)
-		printf("Failed to reg timer\n");
+	{
+		printf("Fatal: Failed to register timer\n");
+		abort();
+	}
 }
 
 Timer::~Timer()

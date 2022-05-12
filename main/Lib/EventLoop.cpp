@@ -16,7 +16,7 @@ EventLoop::EventLoop(const char* eventBase)
 
 	if (auto ret = esp_event_loop_create(&eventTaskArgs, &m_eventLoopHandle); ret != ESP_OK)
 	{
-		printf("ERROR: Failed to create event loop!\n");
+		printf("Fatal: Failed to create event loop!\n");
 		abort();
 	}
 
@@ -26,8 +26,10 @@ EventLoop::EventLoop(const char* eventBase)
 void EventLoop::eventPost(int32_t eventId, size_t dataSize, void* data)
 {
 	if (auto ret = esp_event_post_to(m_eventLoopHandle, m_eventBase, eventId, data, dataSize, 0); ret != ESP_OK)
-		printf("eventPost: ret: %u\n", ret);
-
+	{
+		printf("Fatal: Failed to post event to %s\n", m_eventBase);
+		abort();
+	}
 }
 
 void EventLoop::eventAdapter(void* event_handler_arg, esp_event_base_t event_base, int32_t event_id, void* event_data)

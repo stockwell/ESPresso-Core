@@ -14,7 +14,7 @@ public:
 	uint32_t		IRAM_ATTR TimerISR();
 	void			IRAM_ATTR GpioISR();
 
-	void 			setDuty(uint16_t value) { m_duty = value; m_initCycle = true; }
+	void 			setDuty(uint16_t value) { m_duty = value; }
 
 	void dump();
 
@@ -27,7 +27,8 @@ private:
 	enum class DimmingMethods : uint8_t
 	{
 		TrailingEdge,
-		LeadingEdge
+		LeadingEdge,
+		LeadingPulse,
 	};
 
 	int64_t m_lastZeroCrossing			= 0;
@@ -36,10 +37,10 @@ private:
 	int64_t m_mainsPeriodMs				= 0;
 
 	uint16_t m_minPower					= 0;
-	uint16_t m_duty						= 0;
+	uint16_t m_duty						= 0x7FFF;
 
 	bool m_initCycle					= false;
-	DimmingMethods m_method				= DimmingMethods::LeadingEdge;
+	DimmingMethods m_method				= DimmingMethods::LeadingPulse;
 
 	gpio_num_t m_GPIOPinGate			= GPIO_NUM_NC;
 	gpio_num_t m_GPIOPinZeroCrossing	= GPIO_NUM_NC;

@@ -54,7 +54,7 @@ void IRAM_ATTR TRIAC::GpioISR()
 	// 50Hz mains frequency should give a half cycle of 10ms a 60Hz will give 8.33ms
 	// in any case the cycle last at least 5ms
 	m_lastZeroCrossing = esp_timer_get_time();
-	auto cycle_time = m_lastZeroCrossing- prev_crossed;
+	auto cycle_time = m_lastZeroCrossing - prev_crossed;
 
 	if (cycle_time > 5000)
 	{
@@ -89,7 +89,7 @@ void IRAM_ATTR TRIAC::GpioISR()
 		if (m_method == DimmingMethods::TrailingEdge)
 		{
 			m_onPeriodMs = 1;  // cannot be 0
-			m_offPeriodMs = std::max<int64_t>(10, m_duty * m_mainsPeriodMs / 0xFFFF);
+			m_offPeriodMs = std::max<int64_t>(10, (m_duty * m_mainsPeriodMs) / 0xFFFF);
 		}
 		else
 		{
@@ -98,7 +98,7 @@ void IRAM_ATTR TRIAC::GpioISR()
 			auto min_us = m_mainsPeriodMs * m_minPower / 1000;
 			m_onPeriodMs= std::max<int64_t>(1, ((0xFFFF - m_duty) * (m_mainsPeriodMs - min_us)) / 0xFFFF);
 
-			if (m_method == DimmingMethods::LeadingEdge)
+			if (m_method == DimmingMethods::LeadingPulse)
 			{
 				// Minimum pulse time should be enough for the TRIAC to trigger when it is close to the ZC zone
 				// this is for brightness near 99%
@@ -166,5 +166,5 @@ TRIAC::TRIAC(gpio_num_t GPIOPinGate, gpio_num_t GPIOPinZeroCrossing)
 	gpio_install_isr_service(ESP_INTR_FLAG_IRAM);
 	gpio_isr_handler_add(static_cast<gpio_num_t>(m_GPIOPinZeroCrossing), &TRIAC::GpioAdapter, (void*)this);
 
-	esp_timer_start_periodic(timerHandle, 50);
+	esp_timer_start_periodic(timerHandle, 2);
 }

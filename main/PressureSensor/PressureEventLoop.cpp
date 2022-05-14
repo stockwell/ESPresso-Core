@@ -25,7 +25,7 @@ PressureEventLoop::PressureEventLoop()
 {
 	//m_sensor = std::make_unique<AnalogSensor>();
 
-	m_TRIAC = std::make_unique<TRIAC>(kGPIOPinGate, kGPIOPinZeroCrossing);
+	//m_TRIAC = std::make_unique<TRIAC>(kGPIOPinGate, kGPIOPinZeroCrossing);
 
 	m_timer = std::make_unique<Timer>(kPressurePollPeriodMs, [this]() {
 		eventPost(Events::PressurePollTimerElapsed);
@@ -44,7 +44,7 @@ void PressureEventLoop::eventHandler(int32_t eventId, void* data)
 		break;
 
 	case Events::SetTRIACDuty:
-		m_TRIAC->setDuty(*static_cast<uint16_t*>(data));
+		//m_TRIAC->setDuty(*static_cast<uint16_t*>(data));
 		printf("TRIAC duty set to %d\n", *static_cast<uint16_t*>(data));
 		break;
 

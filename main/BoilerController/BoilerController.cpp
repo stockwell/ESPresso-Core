@@ -6,7 +6,7 @@ namespace
 	constexpr float kDefaultKi = 500.0f;
 	constexpr float kDefaultKd = 1.0f;
 
-	constexpr int kGPIOPin_SSR = 23;
+	constexpr int kGPIOPin_SSR = 21;
 }
 
 BoilerController::BoilerController()

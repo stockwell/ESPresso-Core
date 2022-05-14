@@ -6,7 +6,7 @@ namespace
 	constexpr auto kGPIOPinMOSI = CONFIG_MAX31865_PIN_MOSI;
 	constexpr auto kGPIOPinSCLK = CONFIG_MAX31865_PIN_SCLK;
 	constexpr auto kGPIOPinCS   = CONFIG_MAX31865_PIN_CS;
-	constexpr auto kGPIOPinDRDY = -1;
+	constexpr auto kGPIOPinDRDY = CONFIG_MAX31865_PIN_DRDY;
 
 	constexpr auto kRTDMin = 0x2000;
 	constexpr auto kRTDMax = 0x2500;
@@ -21,13 +21,13 @@ TemperatureSensorMAX31865::TemperatureSensorMAX31865()
 	{
 		.vbias			= true,
 		.autoConversion	= true,
-		.nWires			= Max31865NWires::Two,
+		.nWires			= Max31865NWires::Three,
 		.faultDetection	= Max31865FaultDetection::NoAction,
 		.filter			= Max31865Filter::Hz50,
 	};
 
 	ESP_ERROR_CHECK(m_sensor.begin(config));
-	ESP_ERROR_CHECK(m_sensor.setRTDThresholds(0x2000, 0x2500));
+	ESP_ERROR_CHECK(m_sensor.setRTDThresholds(kRTDMin, kRTDMax));
 }
 
 float TemperatureSensorMAX31865::GetTemperature()

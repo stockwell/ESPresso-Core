@@ -23,7 +23,7 @@ static void mainTask(void* pvParameter)
 	ESP_ERROR_CHECK(esp_netif_init());
 	ESP_ERROR_CHECK(esp_event_loop_create_default());
 
-	Wifi::InitSoftAP();
+	Wifi::InitWifi(Wifi::WifiMode::STA);
 	Wifi::InitMDNS();
 
 	auto boilerEventLoop = std::make_unique<BoilerEventLoop>();

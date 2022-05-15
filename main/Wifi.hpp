@@ -2,6 +2,12 @@
 
 namespace Wifi
 {
-	void InitSoftAP();
+	enum WifiMode
+	{
+		STA,
+		SoftAP,
+	};
+
+	void InitWifi(WifiMode mode);
 	void InitMDNS();
 }

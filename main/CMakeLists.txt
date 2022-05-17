@@ -8,6 +8,7 @@ set(INCLUDES
         PressureSensor/Sensors
         TemperatureSensor
         TemperatureSensor/Sensors
+        Updater
         ADC
         SSR
         TRIAC

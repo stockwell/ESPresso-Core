@@ -119,8 +119,7 @@ static void InitSTA()
 	ESP_ERROR_CHECK(esp_wifi_start());
 	esp_wifi_connect();
 
-	// Uncomment to block until we're connected to the AP and assigned an IPv4 address
-	//xSemaphoreTake(s_semaphoreGetIP, portMAX_DELAY);
+	xSemaphoreTake(s_semaphoreGetIP, portMAX_DELAY);
 }
 
 void Wifi::InitWifi(Wifi::WifiMode mode)

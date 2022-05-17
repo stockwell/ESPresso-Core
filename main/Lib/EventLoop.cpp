@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 
-EventLoop::EventLoop(const char* eventBase)
+EventLoop::EventLoop(const char* eventBase, size_t stackSize)
 	: m_eventBase(eventBase)
 {
 	esp_event_loop_args_t eventTaskArgs =
@@ -10,7 +10,7 @@ EventLoop::EventLoop(const char* eventBase)
 		.queue_size = 10,
 		.task_name = eventBase,
 		.task_priority = 1,
-		.task_stack_size = 2048,
+		.task_stack_size = stackSize,
 		.task_core_id = tskNO_AFFINITY
 	};
 

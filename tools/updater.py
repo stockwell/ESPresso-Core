@@ -8,7 +8,7 @@ async def initiate():
     url = "http://192.168.1.166/api/v1/update/initiate"
 
     request = {
-            'URL'  : 'http://some/fake/address/update.bin',
+            'URL'  : 'http://192.168.1.240:8070/ESPresso.bin',
             'UUID' : str(uuid.uuid4())
     }
 

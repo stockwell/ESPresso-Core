@@ -1,5 +1,7 @@
 #include "UpdaterEventLoop.hpp"
 
+#include "Updater.hpp"
+
 #include <future>
 
 namespace
@@ -12,7 +14,7 @@ namespace
 	};
 }
 
-bool UpdaterEventLoop::initiateUpdate(const UpdateRequest& request)
+bool UpdaterEventLoop::initiateUpdate(const Updater::UpdateRequest& request)
 {
 	if (request.URL.empty() || request.UUID.empty())
 		return false;
@@ -30,7 +32,7 @@ UpdaterEventLoop::UpdateStatus UpdaterEventLoop::getUpdateStatus()
 }
 
 UpdaterEventLoop::UpdaterEventLoop()
-	: EventLoop("UpdaterEventLoop")
+	: EventLoop("UpdaterEventLoop", 8192)
 {
 
 }
@@ -41,9 +43,9 @@ void UpdaterEventLoop::eventHandler(int32_t eventId, void* data)
 	{
 		case Events::Initiate:
 		{
-			auto req = *static_cast<UpdateRequest*>(data);
+			const auto request = *static_cast<Updater::UpdateRequest*>(data);
 
-			printf("Update request initiated with UUID %s @ %s\n", req.UUID.c_str(), req.URL.c_str());
+			m_updater.initiate(request);
 			break;
 		}
 	}

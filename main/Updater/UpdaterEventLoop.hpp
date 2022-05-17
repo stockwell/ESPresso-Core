@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Updater.hpp"
+
 #include "Lib/EventLoop.hpp"
 #include "Lib/Timer.hpp"
 
@@ -18,13 +20,8 @@ public:
 		// status code - failed to download, timeout etc
 	};
 
-	struct UpdateRequest
-	{
-		std::string URL;
-		std::string UUID;
-	};
 
-	bool 			initiateUpdate(const UpdateRequest& request);
+	bool 			initiateUpdate(const Updater::UpdateRequest& request);
 	UpdateStatus	getUpdateStatus();
 
 protected:
@@ -32,6 +29,5 @@ protected:
 
 private:
 	std::unique_ptr<Timer>	m_timer;
-
-	std::string				UUID;
+	Updater					m_updater;
 };

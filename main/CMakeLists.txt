@@ -16,6 +16,8 @@ set(INCLUDES
 
 set(REQUIRES
         ESP32-MAX31865
+        app_update
+        esp_http_client
         esp_http_server
         esp_wifi
         json

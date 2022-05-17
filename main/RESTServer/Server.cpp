@@ -201,7 +201,7 @@ static esp_err_t update_init_post_handler(httpd_req_t* req)
 	auto* url = cJSON_GetObjectItem(root, "URL")->valuestring;
 	auto* uuid = cJSON_GetObjectItem(root, "UUID")->valuestring;
 
-	UpdaterEventLoop::UpdateRequest request =
+	Updater::UpdateRequest request =
 	{
 		url,
 		uuid,

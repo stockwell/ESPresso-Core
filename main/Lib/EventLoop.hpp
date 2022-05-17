@@ -5,7 +5,7 @@
 class EventLoop
 {
 public:
-	EventLoop(const char* id);
+	EventLoop(const char* id, size_t stackSize = 2048);
 	virtual ~EventLoop() = default;
 
 	void						eventPost(int32_t eventId, size_t dataSize = 0, void* data = nullptr);

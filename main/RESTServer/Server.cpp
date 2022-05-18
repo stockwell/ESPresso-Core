@@ -119,6 +119,22 @@ static esp_err_t temperature_data_get_handler(httpd_req_t *req)
 	return ESP_OK;
 }
 
+static esp_err_t pressure_data_get_handler(httpd_req_t *req)
+{
+	auto* serverCtx = ((ServerCtx*)(req->user_ctx));
+
+	httpd_resp_set_type(req, "application/json");
+	cJSON *root = cJSON_CreateObject();
+	cJSON_AddNumberToObject(root, "current", serverCtx->pressureAPI->getPressure());
+
+	const char* temps = cJSON_Print(root);
+	httpd_resp_sendstr(req, temps);
+
+	free((void*)temps);
+	cJSON_Delete(root);
+	return ESP_OK;
+}
+
 static esp_err_t sys_info_get_handler(httpd_req_t *req)
 {
 	httpd_resp_set_type(req, "application/json");
@@ -189,6 +205,8 @@ static esp_err_t update_init_post_handler(httpd_req_t* req)
 
 	serverCtx->boilerAPI->suspend();
 
+	httpd_resp_sendstr(req, "Initiated");
+
 	return ESP_OK;
 }
 
@@ -244,6 +262,8 @@ RESTServer::RESTServer(BoilerEventLoop* boiler, PressureEventLoop* pressure)
 	registerURIHandler(server, "/api/v1/temp/raw", HTTP_POST, temperature_data_post_handler, serverCtx);
 	registerURIHandler(server, "/api/v1/pid/terms", HTTP_GET, pid_terms_get_handler, serverCtx);
 	registerURIHandler(server, "/api/v1/pid/terms", HTTP_POST, pid_terms_post_handler, serverCtx);
+
+	registerURIHandler(server, "/api/v1/pressure/raw", HTTP_GET, pressure_data_get_handler, serverCtx);
 
 	registerURIHandler(server, "/api/v1/update/initiate", HTTP_POST, update_init_post_handler, serverCtx);
 	registerURIHandler(server, "/api/v1/update/status", HTTP_GET, update_status_get_handler, serverCtx);

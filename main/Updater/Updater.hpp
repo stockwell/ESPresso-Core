@@ -9,8 +9,8 @@ class Updater
 public:
 	struct UpdateRequest
 	{
-		std::string URL;
-		std::string UUID;
+		char URL[128];
+		char UUID[64];
 	};
 
 	bool initiate(const UpdateRequest& request);

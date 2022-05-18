@@ -195,7 +195,7 @@ static void ota_example_task(std::string_view URL)
 
 bool Updater::initiate(const Updater::UpdateRequest& request)
 {
-	printf("Update request initiated with UUID %s @ %s\n", request.UUID.c_str(), request.URL.c_str());
+	printf("Update request initiated with UUID %s @ %s\n", request.UUID, request.URL);
 	ota_example_task(request.URL);
 
 	return true;

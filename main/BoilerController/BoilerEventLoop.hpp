@@ -18,6 +18,8 @@ public:
 	void						setPIDTerms(BoilerController::PIDTerms terms);
 	BoilerController::PIDTerms	getPIDTerms();
 
+	void 						suspend();
+
 protected:
 	void						eventHandler(int32_t eventId, void* data) override;
 

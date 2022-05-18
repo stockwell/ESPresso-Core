@@ -15,6 +15,9 @@ namespace
 
 		SetPIDTerms,
 		GetPIDTerms,
+
+		Suspend,
+		Resume,
 	};
 }
 
@@ -31,6 +34,11 @@ void BoilerEventLoop::setBoilerTemperature(float temperature)
 void BoilerEventLoop::setPIDTerms(BoilerController::PIDTerms terms)
 {
 	eventPost(Events::SetPIDTerms, sizeof(terms), &terms);
+}
+
+void BoilerEventLoop::suspend()
+{
+	eventPost(Events::Suspend);
 }
 
 float BoilerEventLoop::getBoilerTemperature()
@@ -105,6 +113,11 @@ void BoilerEventLoop::eventHandler(int32_t eventId, void* data)
 		delete *prom;
 		break;
 	}
+
+	case Events::Suspend:
+		m_timer->stop();
+		m_controller.setBoilerTargetTemp(0.0f);
+		break;
 
 	default:
 		printf("Unhandled event! %d\n", eventId);

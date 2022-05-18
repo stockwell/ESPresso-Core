@@ -21,7 +21,7 @@ public:
 	};
 
 
-	bool 			initiateUpdate(const Updater::UpdateRequest& request);
+	bool 			initiateUpdate(Updater::UpdateRequest& request);
 	UpdateStatus	getUpdateStatus();
 
 protected:

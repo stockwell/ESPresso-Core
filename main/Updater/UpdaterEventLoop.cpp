@@ -14,14 +14,10 @@ namespace
 	};
 }
 
-bool UpdaterEventLoop::initiateUpdate(const Updater::UpdateRequest& request)
+bool UpdaterEventLoop::initiateUpdate(Updater::UpdateRequest& request)
 {
-	if (request.URL.empty() || request.UUID.empty())
-		return false;
-
-	eventPost(Events::Initiate, sizeof(request), (void*)&request);
-
-	return false;
+	eventPost(Events::Initiate, sizeof(request), &request);
+	return true;
 }
 
 UpdaterEventLoop::UpdateStatus UpdaterEventLoop::getUpdateStatus()

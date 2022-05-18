@@ -120,6 +120,8 @@ static void InitSTA()
 	esp_wifi_connect();
 
 	xSemaphoreTake(s_semaphoreGetIP, portMAX_DELAY);
+
+	esp_wifi_set_ps(WIFI_PS_NONE);
 }
 
 void Wifi::InitWifi(Wifi::WifiMode mode)

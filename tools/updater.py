@@ -5,7 +5,7 @@ import requests
 import uuid
 
 async def initiate():
-    url = "http://192.168.1.166/api/v1/update/initiate"
+    url = "http://COFFEE.local/api/v1/update/initiate"
 
     request = {
             'URL'  : 'http://192.168.1.240:8070/ESPresso.bin',

@@ -8,7 +8,7 @@ namespace
 	constexpr auto kGPIOPinCS   = CONFIG_MAX31865_PIN_CS;
 	constexpr auto kGPIOPinDRDY = CONFIG_MAX31865_PIN_DRDY;
 
-	constexpr auto kRTDMin = 0x2000;
+	constexpr auto kRTDMin = 0x0000;
 	constexpr auto kRTDMax = 0x2500;
 	constexpr auto kRTDRef = 430.0f;
 	constexpr auto kRTDNom = 100.0f;
@@ -42,6 +42,7 @@ float TemperatureSensorMAX31865::GetTemperature()
 	Max31865Error fault	= Max31865Error::NoError;
 
 	m_sensor.getRTD(&rtd, &fault);
+	m_sensor.clearFault();
 
 	return Max31865::RTDtoTemperature(rtd, rtdConfig);
 }

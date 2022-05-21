@@ -7,8 +7,8 @@
 namespace
 {
 	// TODO: SDKConfig
-	constexpr auto kGPIONumSDA	= 22;
-	constexpr auto kGPIONumSCL	= 23;
+	constexpr auto kGPIONumSDA	= 14;
+	constexpr auto kGPIONumSCL	= 13;
 	constexpr auto kI2CFreq		= 100000;
 	constexpr auto kI2CNum		= I2C_NUM_0;
 }

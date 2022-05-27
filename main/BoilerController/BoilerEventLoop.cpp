@@ -5,30 +5,41 @@
 
 namespace
 {
-	enum Events
+	enum Events : uint8_t
 	{
 		TickTimerElapsed,
 
-		UpdateTemperature,
-		SetTemperature,
-		GetTemperature,
+		GetCurrentTemperature,
+		GetTargetTemperature,
+		GetBrewTargetTemperature,
+		GetSteamTargetTemperature,
+
+		UpdateCurrentTemperature,
+		SetTargetTemperature,
+		SetBrewTargetTemperature,
+		SetSteamTargetTemperature,
 
 		SetPIDTerms,
 		GetPIDTerms,
 
-		Suspend,
-		Resume,
+		Shutdown,
 	};
 }
 
-void BoilerEventLoop::updateBoilerTemperature(float temperature)
+void BoilerEventLoop::setTemperature(TemperatureTypes type, float temperature)
 {
-	eventPost(Events::UpdateTemperature, sizeof(temperature), &temperature);
+	eventPost(Events::UpdateCurrentTemperature + type, sizeof(temperature), &temperature);
 }
 
-void BoilerEventLoop::setBoilerTemperature(float temperature)
+float BoilerEventLoop::getTemperature(TemperatureTypes type)
 {
-	eventPost(Events::SetTemperature, sizeof(temperature), &temperature);
+	auto prom = new std::promise<float>();
+	std::future<float> fut = prom->get_future();
+
+	eventPost(Events::GetCurrentTemperature + type, sizeof(void*), &prom);
+
+	fut.wait();
+	return fut.get();
 }
 
 void BoilerEventLoop::setPIDTerms(BoilerController::PIDTerms terms)
@@ -36,20 +47,9 @@ void BoilerEventLoop::setPIDTerms(BoilerController::PIDTerms terms)
 	eventPost(Events::SetPIDTerms, sizeof(terms), &terms);
 }
 
-void BoilerEventLoop::suspend()
+void BoilerEventLoop::shutdown()
 {
-	eventPost(Events::Suspend);
-}
-
-float BoilerEventLoop::getBoilerTemperature()
-{
-	auto prom = new std::promise<float>();
-	std::future<float> fut = prom->get_future();
-
-	eventPost(Events::GetTemperature, sizeof(void*), &prom);
-
-	fut.wait();
-	return fut.get();
+	eventPost(Events::Shutdown);
 }
 
 BoilerController::PIDTerms BoilerEventLoop::getPIDTerms()
@@ -81,18 +81,55 @@ void BoilerEventLoop::eventHandler(int32_t eventId, void* data)
 		m_controller.tick();
 		break;
 
-	case Events::UpdateTemperature:
-		m_controller.setBoilerCurrentTemp(*static_cast<float*>(data));
+	case Events::UpdateCurrentTemperature:
+		m_controller.updateCurrentTemp(*static_cast<float*>(data));
 		break;
 
-	case Events::SetTemperature:
-		m_controller.setBoilerTargetTemp(*static_cast<float*>(data));
+	case Events::SetBrewTargetTemperature:
+		m_controller.setBrewTargetTemp(*static_cast<float*>(data));
 		break;
 
-	case Events::GetTemperature:
+	case Events::SetSteamTargetTemperature:
+		m_controller.setSteamTargetTemp(*static_cast<float*>(data));
+		break;
+
+	case Events::GetCurrentTemperature:
 	{
 		auto* prom = static_cast<std::promise<float>**>(data);
-		auto val = m_controller.getBoilerCurrentTemp();
+		auto val = m_controller.getCurrentTemp();
+
+		(*prom)->set_value(val);
+		delete *prom;
+
+		break;
+	}
+
+	case Events::GetTargetTemperature:
+	{
+		auto* prom = static_cast<std::promise<float>**>(data);
+		auto val = m_controller.getTargetTemp();
+
+		(*prom)->set_value(val);
+		delete *prom;
+
+		break;
+	}
+
+	case Events::GetBrewTargetTemperature:
+	{
+		auto* prom = static_cast<std::promise<float>**>(data);
+		auto val = m_controller.getBrewTargetTemp();
+
+		(*prom)->set_value(val);
+		delete *prom;
+
+		break;
+	}
+
+	case Events::GetSteamTargetTemperature:
+	{
+		auto* prom = static_cast<std::promise<float>**>(data);
+		auto val = m_controller.getSteamTargetTemp();
 
 		(*prom)->set_value(val);
 		delete *prom;
@@ -101,10 +138,8 @@ void BoilerEventLoop::eventHandler(int32_t eventId, void* data)
 	}
 
 	case Events::SetPIDTerms:
-	{
 		m_controller.setPIDTerms(*static_cast<BoilerController::PIDTerms*>(data));
 		break;
-	}
 
 	case Events::GetPIDTerms:
 	{
@@ -114,9 +149,9 @@ void BoilerEventLoop::eventHandler(int32_t eventId, void* data)
 		break;
 	}
 
-	case Events::Suspend:
+	case Events::Shutdown:
 		m_timer->stop();
-		m_controller.setBoilerTargetTemp(0.0f);
+		m_controller.shutdown();
 		break;
 
 	default:

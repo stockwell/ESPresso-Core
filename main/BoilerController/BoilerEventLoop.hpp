@@ -11,14 +11,21 @@ public:
 	BoilerEventLoop();
 	virtual ~BoilerEventLoop() = default;
 
-	void						updateBoilerTemperature(float temperature);
-	void						setBoilerTemperature(float temperature);
-	float						getBoilerTemperature();
+	enum TemperatureTypes
+	{
+		CurrentBoilerTemp,
+		CurrentTargetTemp,
+		BrewTargetTemp,
+		SteamTargetTemp,
+	};
+
+	void						setTemperature(TemperatureTypes type, float temperature);
+	float						getTemperature(TemperatureTypes type);
 
 	void						setPIDTerms(BoilerController::PIDTerms terms);
 	BoilerController::PIDTerms	getPIDTerms();
 
-	void 						suspend();
+	void 						shutdown();
 
 protected:
 	void						eventHandler(int32_t eventId, void* data) override;

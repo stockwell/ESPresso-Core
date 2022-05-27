@@ -6,13 +6,6 @@
 #include "QuickPID.h"
 #include "SSR.hpp"
 
-class BoilerTemperatureDelegate
-{
-public:
-	virtual void onBoilerCurrentTempChanged(float temp)	{ };
-	virtual void onBoilerTargetTempChanged(float temp) { };
-};
-
 class BoilerController
 {
 public:
@@ -26,28 +19,36 @@ public:
 
 	BoilerController();
 
-	void registerBoilerTemperatureDelegate(BoilerTemperatureDelegate* delegate);
-	void deregisterBoilerTemperatureDelegate(BoilerTemperatureDelegate* delegate);
+	void updateCurrentTemp(float temp);
+	void setBrewTargetTemp(float temp);
+	void setSteamTargetTemp(float temp);
 
-	void setBoilerTargetTemp(float temp);
-	void setBoilerCurrentTemp(float temp);
-
-	float getBoilerTargetTemp() const { return m_targetTemp; }
-	float getBoilerCurrentTemp() const { return m_currentTemp; }
+	float getTargetTemp() const			{ return m_targetTemp; }
+	float getCurrentTemp() const		{ return m_currentTemp; }
+	float getBrewTargetTemp() const		{ return m_brewTemp; }
+	float getSteamTargetTemp() const	{ return m_steamTemp; }
 
 	void setPIDTerms(PIDTerms terms);
-	PIDTerms getPIDTerms() const { return m_terms; }
+	PIDTerms getPIDTerms() const 		{ return m_terms; }
 
 	void tick();
+	void shutdown();
 
 private:
-	std::set<BoilerTemperatureDelegate*> m_delegates;
-	std::unique_ptr<QuickPID> m_pid;
-	SSR m_ssr;
+	QuickPID			m_pid;
+	SSR					m_ssr;
 
-	float m_targetTemp		= 0.0;
-	float m_currentTemp		= 0.0;
-	float m_outputPower		= 0.0;
+	const gpio_num_t	m_brewSwitchGPIO;
+	const gpio_num_t	m_steamSwitchGPIO;
 
-	PIDTerms m_terms;
+	float		m_brewTemp    = 0.0;
+	float		m_steamTemp   = 0.0;
+
+	float		m_targetTemp  = 0.0;
+	float		m_currentTemp = 0.0;
+	float		m_outputPower = 0.0;
+
+	bool 		m_inhibit = false;
+
+	PIDTerms	m_terms;
 };

@@ -208,7 +208,9 @@ static esp_err_t update_init_post_handler(httpd_req_t* req)
 		return ESP_FAIL;
 	}
 
-	serverCtx->boilerAPI->suspend();
+	// TODO: Generic shutdown notification system
+	serverCtx->boilerAPI->shutdown();
+	serverCtx->pressureAPI->shutdown();
 
 	httpd_resp_sendstr(req, "Initiated");
 

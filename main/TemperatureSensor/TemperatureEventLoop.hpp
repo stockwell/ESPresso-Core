@@ -11,6 +11,8 @@ class TemperatureEventLoop : public EventLoop
 public:
 	explicit TemperatureEventLoop(BoilerEventLoop* boilerEventLoop);
 
+	void shutdown();
+
 protected:
 	void eventHandler(int32_t eventId, void* data) override;
 

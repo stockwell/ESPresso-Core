@@ -16,6 +16,7 @@ public:
 	explicit PressureEventLoop();
 
 	float getPressure();
+	void shutdown();
 
 protected:
 	void eventHandler(int32_t eventId, void* data) override;

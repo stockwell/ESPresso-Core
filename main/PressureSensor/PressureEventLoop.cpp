@@ -13,6 +13,8 @@ namespace
 		PressurePollTimerElapsed,
 
 		GetPressure,
+
+		Shutdown,
 	};
 }
 
@@ -25,6 +27,11 @@ float PressureEventLoop::getPressure()
 
 	fut.wait();
 	return fut.get();
+}
+
+void PressureEventLoop::shutdown()
+{
+	eventPost(Events::Shutdown);
 }
 
 PressureEventLoop::PressureEventLoop()
@@ -44,17 +51,21 @@ void PressureEventLoop::eventHandler(int32_t eventId, void* data)
 	switch (eventId)
 	{
 	case Events::PressurePollTimerElapsed:
-		// Update pressure in pump controller?
+		// TODO: Update pressure in pump controller
 		m_pressure = m_sensor->GetPressure();
 		break;
 
 	case Events::GetPressure:
+	{
 		auto* prom = static_cast<std::promise<float>**>(data);
 
 		(*prom)->set_value(m_pressure);
 		delete *prom;
 
 		break;
-		break;
+	}
+
+	case Events::Shutdown:
+		m_timer->stop();
 	}
 }

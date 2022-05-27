@@ -1,8 +1,8 @@
 #include "TemperatureEventLoop.hpp"
 
 #if CONFIG_BOILER_TEMP_SENSOR_MAX31865
-#include "TemperatureSensorMAX31865.hpp"
-using BoilerTemperatureSensor = TemperatureSensorMAX31865;
+	#include "TemperatureSensorMAX31865.hpp"
+	using BoilerTemperatureSensor = TemperatureSensorMAX31865;
 #endif
 
 namespace
@@ -12,7 +12,14 @@ namespace
 	enum Events
 	{
 		TemperaturePollTimerElapsed,
+
+		Shutdown,
 	};
+}
+
+void TemperatureEventLoop::shutdown()
+{
+	eventPost(Events::Shutdown);
 }
 
 TemperatureEventLoop::TemperatureEventLoop(BoilerEventLoop* boilerEventLoop)
@@ -35,6 +42,9 @@ void TemperatureEventLoop::eventHandler(int32_t eventId, void* data)
 	case Events::TemperaturePollTimerElapsed:
 		m_boilerEventLoop->setTemperature(BoilerEventLoop::CurrentBoilerTemp, m_sensor->GetTemperature());
 		break;
+
+	case Events::Shutdown:
+		m_timer->stop();
 		break;
 	}
 }

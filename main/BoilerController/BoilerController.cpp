@@ -79,11 +79,13 @@ void BoilerController::tick()
 		return;
 	}
 
-	if (gpio_get_level(m_brewSwitchGPIO) == 0)
-		m_targetTemp = m_brewTemp;
+	//TODO: Trigger pump
+	//if (gpio_get_level(m_brewSwitchGPIO) == 0)
 
 	if (gpio_get_level(m_steamSwitchGPIO) == 0)
 		m_targetTemp = m_steamTemp;
+	else
+		m_targetTemp = m_brewTemp;
 
 	m_pid.Compute();
 

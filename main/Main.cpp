@@ -31,7 +31,8 @@ static void mainTask(void* pvParameter)
 	auto pressureEventLoop = std::make_unique<PressureEventLoop>();
 	auto restServer = std::make_unique<RESTServer>(boilerEventLoop.get(), pressureEventLoop.get());
 
-	boilerEventLoop->setBoilerTemperature(93.1f);
+	boilerEventLoop->setTemperature(BoilerEventLoop::BrewTargetTemp, 93.1f);
+	boilerEventLoop->setTemperature(BoilerEventLoop::SteamTargetTemp, 140.0f);
 
 	while (1)
 		vTaskDelay(portMAX_DELAY);

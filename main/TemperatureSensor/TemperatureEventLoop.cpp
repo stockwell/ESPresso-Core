@@ -33,7 +33,8 @@ void TemperatureEventLoop::eventHandler(int32_t eventId, void* data)
 	switch (eventId)
 	{
 	case Events::TemperaturePollTimerElapsed:
-		m_boilerEventLoop->updateBoilerTemperature(m_sensor->GetTemperature());
+		m_boilerEventLoop->setTemperature(BoilerEventLoop::CurrentBoilerTemp, m_sensor->GetTemperature());
+		break;
 		break;
 	}
 }

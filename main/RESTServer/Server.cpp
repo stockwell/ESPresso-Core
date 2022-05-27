@@ -109,7 +109,10 @@ static esp_err_t temperature_data_get_handler(httpd_req_t *req)
 
 	httpd_resp_set_type(req, "application/json");
 	cJSON *root = cJSON_CreateObject();
-	cJSON_AddNumberToObject(root, "current", serverCtx->boilerAPI->getBoilerTemperature());
+	cJSON_AddNumberToObject(root, "current", serverCtx->boilerAPI->getTemperature(BoilerEventLoop::CurrentBoilerTemp));
+	cJSON_AddNumberToObject(root, "target",  serverCtx->boilerAPI->getTemperature(BoilerEventLoop::CurrentTargetTemp));
+	cJSON_AddNumberToObject(root, "brew",    serverCtx->boilerAPI->getTemperature(BoilerEventLoop::BrewTargetTemp));
+	cJSON_AddNumberToObject(root, "steam",   serverCtx->boilerAPI->getTemperature(BoilerEventLoop::SteamTargetTemp));
 
 	const char* temps = cJSON_Print(root);
 	httpd_resp_sendstr(req, temps);
@@ -163,9 +166,11 @@ static esp_err_t temperature_data_post_handler(httpd_req_t* req)
 		return ESP_FAIL;
 	}
 
-	float target = cJSON_GetObjectItem(root, "target")->valuedouble;
+	if (cJSON_HasObjectItem(root, "brewTarget"))
+		serverCtx->boilerAPI->setTemperature(BoilerEventLoop::BrewTargetTemp, cJSON_GetObjectItem(root, "brewTarget")->valuedouble);
 
-	serverCtx->boilerAPI->setBoilerTemperature(target);
+	if (cJSON_HasObjectItem(root, "steamTarget"))
+		serverCtx->boilerAPI->setTemperature(BoilerEventLoop::SteamTargetTemp, cJSON_GetObjectItem(root, "steamTarget")->valuedouble);
 
 	cJSON_Delete(root);
 

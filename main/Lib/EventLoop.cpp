@@ -25,7 +25,7 @@ EventLoop::EventLoop(const char* eventBase, size_t stackSize)
 
 void EventLoop::eventPost(int32_t eventId, size_t dataSize, void* data)
 {
-	if (auto ret = esp_event_post_to(m_eventLoopHandle, m_eventBase, eventId, data, dataSize, 0); ret != ESP_OK)
+	if (auto ret = esp_event_post_to(m_eventLoopHandle, m_eventBase, eventId, data, dataSize, 10); ret != ESP_OK)
 	{
 		printf("Fatal: Failed to post event to %s\n", m_eventBase);
 		abort();

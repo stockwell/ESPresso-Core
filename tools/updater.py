@@ -2,6 +2,7 @@
 
 import asyncio
 import requests
+import socket
 import uuid
 
 def get_ip():
@@ -24,7 +25,7 @@ async def initiate():
 		'UUID' : str(uuid.uuid4())
 	}
 
-	x = requests.post(url, json = request, timeout = 0.01)
+	x = requests.post(url, json = request, timeout = 0.1)
     
 loop = asyncio.get_event_loop()
 try:

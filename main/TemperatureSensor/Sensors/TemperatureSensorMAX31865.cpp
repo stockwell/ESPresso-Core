@@ -9,7 +9,7 @@ namespace
 	constexpr auto kGPIOPinDRDY = CONFIG_MAX31865_PIN_DRDY;
 
 	constexpr auto kRTDMin = 0x0000;
-	constexpr auto kRTDMax = 0x2500;
+	constexpr auto kRTDMax = 0x5000;
 	constexpr auto kRTDRef = 430.0f;
 	constexpr auto kRTDNom = 100.0f;
 }

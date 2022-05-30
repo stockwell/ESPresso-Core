@@ -63,6 +63,8 @@ void BoilerController::setPIDTerms(PIDTerms terms)
 	if (terms == m_terms)
 		return;
 
+	m_terms = terms;
+
 	auto [Kp, Ki, Kd] = terms;
 
 	m_pid.SetTunings(Kp, Ki, Kd);

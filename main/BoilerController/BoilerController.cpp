@@ -7,8 +7,8 @@ namespace
 	constexpr float kDefaultKd = 1.0f;
 
 	constexpr int kGPIOPin_SSR = 18;
-	constexpr int kGPIOPin_BrewSwitch = 19;
-	constexpr int kGPIOPin_SteamSwitch = 20;
+	constexpr int kGPIOPin_BrewSwitch = 17;
+	constexpr int kGPIOPin_SteamSwitch = 16;
 
 	constexpr auto kBrewTempMax = 100.0f;
 	constexpr auto kShutdownTemp = 160.0f;

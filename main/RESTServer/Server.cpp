@@ -107,12 +107,16 @@ static esp_err_t temperature_data_get_handler(httpd_req_t *req)
 {
 	auto* serverCtx = ((ServerCtx*)(req->user_ctx));
 
+	auto* boilerAPI = serverCtx->boilerAPI;
+
 	httpd_resp_set_type(req, "application/json");
 	cJSON *root = cJSON_CreateObject();
-	cJSON_AddNumberToObject(root, "current", serverCtx->boilerAPI->getTemperature(BoilerEventLoop::CurrentBoilerTemp));
-	cJSON_AddNumberToObject(root, "target",  serverCtx->boilerAPI->getTemperature(BoilerEventLoop::CurrentTargetTemp));
-	cJSON_AddNumberToObject(root, "brew",    serverCtx->boilerAPI->getTemperature(BoilerEventLoop::BrewTargetTemp));
-	cJSON_AddNumberToObject(root, "steam",   serverCtx->boilerAPI->getTemperature(BoilerEventLoop::SteamTargetTemp));
+	cJSON_AddNumberToObject(root, "current", boilerAPI->getTemperature(BoilerEventLoop::CurrentBoilerTemp));
+	cJSON_AddNumberToObject(root, "target",  boilerAPI->getTemperature(BoilerEventLoop::CurrentTargetTemp));
+	cJSON_AddNumberToObject(root, "brew",    boilerAPI->getTemperature(BoilerEventLoop::BrewTargetTemp));
+	cJSON_AddNumberToObject(root, "steam",   boilerAPI->getTemperature(BoilerEventLoop::SteamTargetTemp));
+
+	cJSON_AddNumberToObject(root, "state",  static_cast<int>(boilerAPI->getState()));
 
 	const char* temps = cJSON_Print(root);
 	httpd_resp_sendstr(req, temps);

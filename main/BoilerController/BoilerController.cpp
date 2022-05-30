@@ -81,8 +81,15 @@ void BoilerController::tick()
 		return;
 	}
 
-	//TODO: Trigger pump
-	//if (gpio_get_level(m_brewSwitchGPIO) == 0)
+	//TODO: Trigger pump, and actually use the Heating state..
+	if (gpio_get_level(m_brewSwitchGPIO) == 0)
+	{
+		m_state = BoilerState::Brewing;
+	}
+	else
+	{
+		m_state = BoilerState::Ready;
+	}
 
 	if (gpio_get_level(m_steamSwitchGPIO) == 0)
 		m_targetTemp = m_steamTemp;

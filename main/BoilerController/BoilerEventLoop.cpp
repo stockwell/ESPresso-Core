@@ -22,6 +22,8 @@ namespace
 		SetPIDTerms,
 		GetPIDTerms,
 
+		GetBoilerState,
+
 		Shutdown,
 	};
 }
@@ -58,6 +60,17 @@ BoilerController::PIDTerms BoilerEventLoop::getPIDTerms()
 	std::future<BoilerController::PIDTerms> fut = prom->get_future();
 
 	eventPost(Events::GetPIDTerms, sizeof(void*), &prom);
+
+	fut.wait();
+	return fut.get();
+}
+
+BoilerController::BoilerState BoilerEventLoop::getState()
+{
+	auto prom = new std::promise<BoilerController::BoilerState>();
+	std::future<BoilerController::BoilerState> fut = prom->get_future();
+
+	eventPost(Events::GetBoilerState, sizeof(void*), &prom);
 
 	fut.wait();
 	return fut.get();
@@ -145,6 +158,14 @@ void BoilerEventLoop::eventHandler(int32_t eventId, void* data)
 	{
 		auto* prom = static_cast<std::promise<BoilerController::PIDTerms>**>(data);
 		(*prom)->set_value(m_controller.getPIDTerms());
+		delete *prom;
+		break;
+	}
+
+	case Events::GetBoilerState:
+	{
+		auto* prom = static_cast<std::promise<BoilerController::BoilerState>**>(data);
+		(*prom)->set_value(m_controller.getState());
 		delete *prom;
 		break;
 	}

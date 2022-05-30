@@ -25,6 +25,8 @@ public:
 	void						setPIDTerms(BoilerController::PIDTerms terms);
 	BoilerController::PIDTerms	getPIDTerms();
 
+	BoilerController::BoilerState getState();
+
 	void 						shutdown();
 
 protected:

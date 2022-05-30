@@ -13,6 +13,7 @@ public:
 	{
 		Heating,
 		Ready,
+		Brewing,
 	};
 
 	using PIDTerms = std::tuple<float, float, float>;
@@ -27,6 +28,8 @@ public:
 	float getCurrentTemp() const		{ return m_currentTemp; }
 	float getBrewTargetTemp() const		{ return m_brewTemp; }
 	float getSteamTargetTemp() const	{ return m_steamTemp; }
+
+	BoilerState getState() const		{ return m_state; }
 
 	void setPIDTerms(PIDTerms terms);
 	PIDTerms getPIDTerms() const 		{ return m_terms; }
@@ -50,5 +53,6 @@ private:
 
 	bool 		m_inhibit = false;
 
+	BoilerState	m_state = BoilerState::Heating;
 	PIDTerms	m_terms;
 };

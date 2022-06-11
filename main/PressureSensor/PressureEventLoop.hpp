@@ -6,8 +6,6 @@
 #include "Lib/EventLoop.hpp"
 #include "Lib/Timer.hpp"
 
-#include "ADS1115.hpp"
-
 #include "Triac.hpp"
 
 class PressureEventLoop : public EventLoop

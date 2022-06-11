@@ -2,9 +2,9 @@
 
 #include "PressureSensor.hpp"
 
-#include <memory>
+#include "ADS1115.hpp"
 
-class ADS1115;
+#include <memory>
 
 class AnalogSensor : public PressureSensor
 {
@@ -14,5 +14,5 @@ public:
 	float GetPressure() override;
 
 private:
-	std::unique_ptr<ADS1115>	m_ADC;
+	ADS1115		m_ADC;
 };

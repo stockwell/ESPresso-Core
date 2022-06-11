@@ -35,13 +35,7 @@ void BoilerEventLoop::setTemperature(TemperatureTypes type, float temperature)
 
 float BoilerEventLoop::getTemperature(TemperatureTypes type)
 {
-	auto prom = new std::promise<float>();
-	std::future<float> fut = prom->get_future();
-
-	eventPost(Events::GetCurrentTemperature + type, sizeof(void*), &prom);
-
-	fut.wait();
-	return fut.get();
+	return getFromEventLoop(Events::GetCurrentTemperature + type, new std::promise<float>());
 }
 
 void BoilerEventLoop::setPIDTerms(BoilerController::PIDTerms terms)
@@ -56,24 +50,12 @@ void BoilerEventLoop::shutdown()
 
 BoilerController::PIDTerms BoilerEventLoop::getPIDTerms()
 {
-	auto prom = new std::promise<BoilerController::PIDTerms>();
-	std::future<BoilerController::PIDTerms> fut = prom->get_future();
-
-	eventPost(Events::GetPIDTerms, sizeof(void*), &prom);
-
-	fut.wait();
-	return fut.get();
+	return getFromEventLoop(Events::GetPIDTerms, new std::promise<BoilerController::PIDTerms>());
 }
 
 BoilerController::BoilerState BoilerEventLoop::getState()
 {
-	auto prom = new std::promise<BoilerController::BoilerState>();
-	std::future<BoilerController::BoilerState> fut = prom->get_future();
-
-	eventPost(Events::GetBoilerState, sizeof(void*), &prom);
-
-	fut.wait();
-	return fut.get();
+	return getFromEventLoop(Events::GetBoilerState, new std::promise<BoilerController::BoilerState>());
 }
 
 BoilerEventLoop::BoilerEventLoop()
@@ -108,45 +90,25 @@ void BoilerEventLoop::eventHandler(int32_t eventId, void* data)
 
 	case Events::GetCurrentTemperature:
 	{
-		auto* prom = static_cast<std::promise<float>**>(data);
-		auto val = m_controller.getCurrentTemp();
-
-		(*prom)->set_value(val);
-		delete *prom;
-
+		EventLoopHelpers::setResponse(m_controller.getCurrentTemp(), data);
 		break;
 	}
 
 	case Events::GetTargetTemperature:
 	{
-		auto* prom = static_cast<std::promise<float>**>(data);
-		auto val = m_controller.getTargetTemp();
-
-		(*prom)->set_value(val);
-		delete *prom;
-
+		EventLoopHelpers::setResponse(m_controller.getTargetTemp(), data);
 		break;
 	}
 
 	case Events::GetBrewTargetTemperature:
 	{
-		auto* prom = static_cast<std::promise<float>**>(data);
-		auto val = m_controller.getBrewTargetTemp();
-
-		(*prom)->set_value(val);
-		delete *prom;
-
+		EventLoopHelpers::setResponse(m_controller.getBrewTargetTemp(), data);
 		break;
 	}
 
 	case Events::GetSteamTargetTemperature:
 	{
-		auto* prom = static_cast<std::promise<float>**>(data);
-		auto val = m_controller.getSteamTargetTemp();
-
-		(*prom)->set_value(val);
-		delete *prom;
-
+		EventLoopHelpers::setResponse(m_controller.getSteamTargetTemp(), data);
 		break;
 	}
 
@@ -156,17 +118,13 @@ void BoilerEventLoop::eventHandler(int32_t eventId, void* data)
 
 	case Events::GetPIDTerms:
 	{
-		auto* prom = static_cast<std::promise<BoilerController::PIDTerms>**>(data);
-		(*prom)->set_value(m_controller.getPIDTerms());
-		delete *prom;
+		EventLoopHelpers::setResponse(m_controller.getPIDTerms(), data);
 		break;
 	}
 
 	case Events::GetBoilerState:
 	{
-		auto* prom = static_cast<std::promise<BoilerController::BoilerState>**>(data);
-		(*prom)->set_value(m_controller.getState());
-		delete *prom;
+		EventLoopHelpers::setResponse(m_controller.getState(), data);
 		break;
 	}
 

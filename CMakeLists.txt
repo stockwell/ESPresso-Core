@@ -7,6 +7,8 @@ set(CMAKE_C_COMPILER xtensa-esp32-elf-gcc)
 set(CMAKE_CXX_COMPILER xtensa-esp32-elf-g++)
 set(CMAKE_ASM_COMPILER xtensa-esp32-elf-as)
 
+set(IDF_TARGET esp32s3)
+
 list(APPEND EXTRA_COMPONENT_DIRS
         src
         vendor/QuickPID

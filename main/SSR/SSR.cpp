@@ -30,8 +30,10 @@ SSR::SSR(gpio_num_t GPIONum /*TODO: AC Period*/)
 		.intr_type		= LEDC_INTR_DISABLE,
 		.timer_sel		= kLEDC_Timer,
 		.duty			= 0,
-		.hpoint			= 0
+		.hpoint			= 0,
 	};
+	ledc_channel.flags.output_invert = 1;
+
 	ESP_ERROR_CHECK(ledc_channel_config(&ledc_channel));
 }
 

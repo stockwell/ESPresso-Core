@@ -15,32 +15,32 @@ menu "ESPresso Configuration"
 			config MAX31865_PIN_MISO
 						int "MAX31865 MISO Pin"
 						depends on BOILER_TEMP_SENSOR_MAX31865 
-						range 0 39
-						default 12
+						range 0 49
+						default 13
 
 			config MAX31865_PIN_MOSI
 						int "MAX31865 MOSI Pin"
 						depends on BOILER_TEMP_SENSOR_MAX31865
-						range 0 39
-						default 14
+						range 0 49
+						default 47
 
 			config MAX31865_PIN_SCLK
 						int "MAX31865 SCLK Pin"
 						depends on BOILER_TEMP_SENSOR_MAX31865
-						range 0 39
-						default 13
+						range 0 49
+						default 21
 
 			config MAX31865_PIN_CS
 						int "MAX31865 nCS Pin"
 						depends on BOILER_TEMP_SENSOR_MAX31865
 						range 0 39
-						default 27
+						default 14
 
 			config MAX31865_PIN_DRDY
 						int "MAX31865 nDRDY Pin"
 						depends on BOILER_TEMP_SENSOR_MAX31865
 						range 0 39
-						default 26
+						default 12
 
     endchoice
   endmenu

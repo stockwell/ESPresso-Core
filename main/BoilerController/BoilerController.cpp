@@ -2,13 +2,13 @@
 
 namespace
 {
-	constexpr float kDefaultKp = 500.0f;
-	constexpr float kDefaultKi = 500.0f;
-	constexpr float kDefaultKd = 1.0f;
+	constexpr float kDefaultKp = 150.0f;
+	constexpr float kDefaultKi = 10.0f;
+	constexpr float kDefaultKd = 300.0f;
 
-	constexpr int kGPIOPin_SSR = 18;
-	constexpr int kGPIOPin_BrewSwitch = 17;
-	constexpr int kGPIOPin_SteamSwitch = 16;
+	constexpr auto kGPIOPin_SSR = GPIO_NUM_39;
+	constexpr auto kGPIOPin_BrewSwitch = GPIO_NUM_11;
+	constexpr auto kGPIOPin_SteamSwitch = GPIO_NUM_10;
 
 	constexpr auto kBrewTempMax = 100.0f;
 	constexpr auto kShutdownTemp = 160.0f;
@@ -16,12 +16,13 @@ namespace
 
 BoilerController::BoilerController()
 	: m_pid(&m_currentTemp, &m_outputPower, &m_targetTemp, kDefaultKp, kDefaultKi, kDefaultKd, QuickPID::Action::direct)
-	, m_ssr(static_cast<gpio_num_t>(kGPIOPin_SSR))
-	, m_brewSwitchGPIO(static_cast<gpio_num_t>(kGPIOPin_BrewSwitch))
-	, m_steamSwitchGPIO(static_cast<gpio_num_t>(kGPIOPin_SteamSwitch))
+	, m_ssr(kGPIOPin_SSR)
+	, m_brewSwitchGPIO(kGPIOPin_BrewSwitch)
+	, m_steamSwitchGPIO(kGPIOPin_SteamSwitch)
 	, m_terms(kDefaultKp, kDefaultKi, kDefaultKd)
+	, m_pumpAPI(pumpAPI)
 {
-	m_pid.SetSampleTimeUs(10000);
+	m_pid.SetSampleTimeUs(100000);
 	m_pid.SetOutputLimits(0, 1024);
 	m_pid.SetMode(QuickPID::Control::automatic);
 

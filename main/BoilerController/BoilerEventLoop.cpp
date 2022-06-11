@@ -79,7 +79,7 @@ BoilerController::BoilerState BoilerEventLoop::getState()
 BoilerEventLoop::BoilerEventLoop()
 	: EventLoop("BoilerEvent")
 {
-	m_timer = std::make_unique<Timer>(10, [this]() {
+	m_timer = std::make_unique<Timer>(100, [this]() {
 		eventPost(Events::TickTimerElapsed);
 	});
 

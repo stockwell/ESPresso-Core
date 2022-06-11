@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BoilerController.hpp"
+#include "PumpEventLoop.hpp"
 
 #include "Lib/EventLoop.hpp"
 #include "Lib/Timer.hpp"
@@ -8,7 +9,7 @@
 class BoilerEventLoop : public EventLoop
 {
 public:
-	BoilerEventLoop();
+	BoilerEventLoop(PumpEventLoop* pumpAPI);
 	virtual ~BoilerEventLoop() = default;
 
 	enum TemperatureTypes

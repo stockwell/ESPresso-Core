@@ -14,7 +14,7 @@ namespace
 	constexpr auto kShutdownTemp = 160.0f;
 }
 
-BoilerController::BoilerController()
+BoilerController::BoilerController(PumpEventLoop* pumpAPI)
 	: m_pid(&m_currentTemp, &m_outputPower, &m_targetTemp, kDefaultKp, kDefaultKi, kDefaultKd, QuickPID::Action::direct)
 	, m_ssr(kGPIOPin_SSR)
 	, m_brewSwitchGPIO(kGPIOPin_BrewSwitch)
@@ -86,10 +86,12 @@ void BoilerController::tick()
 	if (gpio_get_level(m_brewSwitchGPIO) == 0)
 	{
 		m_state = BoilerState::Brewing;
+		m_pumpAPI->startPump();
 	}
 	else
 	{
 		m_state = BoilerState::Ready;
+		m_pumpAPI->stopPump();
 	}
 
 	if (gpio_get_level(m_steamSwitchGPIO) == 0)

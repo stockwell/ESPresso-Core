@@ -2,6 +2,7 @@
 
 #include "BoilerEventLoop.hpp"
 #include "PressureSensor.hpp"
+#include "PumpEventLoop.hpp"
 
 #include "Lib/EventLoop.hpp"
 #include "Lib/Timer.hpp"
@@ -11,9 +12,8 @@
 class PressureEventLoop : public EventLoop
 {
 public:
-	explicit PressureEventLoop();
+	explicit PressureEventLoop(PumpEventLoop* pumpAPI);
 
-	float getPressure();
 	void shutdown();
 
 protected:
@@ -23,5 +23,7 @@ private:
 	std::unique_ptr<Timer>				m_timer;
 	std::unique_ptr<PressureSensor>		m_sensor;
 
-	float 								m_pressure;
+	PumpEventLoop*						m_pumpAPI;
+
+	float 								m_pressure = 0.0f;
 };

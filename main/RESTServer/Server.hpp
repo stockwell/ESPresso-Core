@@ -6,5 +6,5 @@
 class RESTServer
 {
 public:
-	explicit RESTServer(BoilerEventLoop* boiler, PressureEventLoop* pressure);
+	explicit RESTServer(BoilerEventLoop* boiler, PressureEventLoop* pressure, PumpEventLoop* pump);
 };

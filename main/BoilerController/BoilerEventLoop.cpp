@@ -58,8 +58,9 @@ BoilerController::BoilerState BoilerEventLoop::getState()
 	return getFromEventLoop(Events::GetBoilerState, new std::promise<BoilerController::BoilerState>());
 }
 
-BoilerEventLoop::BoilerEventLoop()
+BoilerEventLoop::BoilerEventLoop(PumpEventLoop* pumpAPI)
 	: EventLoop("BoilerEvent")
+	, m_controller(pumpAPI)
 {
 	m_timer = std::make_unique<Timer>(100, [this]() {
 		eventPost(Events::TickTimerElapsed);

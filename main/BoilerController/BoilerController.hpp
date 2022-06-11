@@ -1,10 +1,11 @@
 #pragma once
 
-#include <set>
-#include <memory>
+#include "PumpEventLoop.hpp"
+#include "SSR.hpp"
 
 #include "QuickPID.h"
-#include "SSR.hpp"
+
+#include <memory>
 
 class BoilerController
 {
@@ -18,7 +19,7 @@ public:
 
 	using PIDTerms = std::tuple<float, float, float>;
 
-	BoilerController();
+	BoilerController(PumpEventLoop* pumpAPI);
 
 	void updateCurrentTemp(float temp);
 	void setBrewTargetTemp(float temp);
@@ -55,4 +56,6 @@ private:
 
 	BoilerState	m_state = BoilerState::Heating;
 	PIDTerms	m_terms;
+
+	PumpEventLoop* m_pumpAPI;
 };

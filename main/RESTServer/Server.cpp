@@ -24,6 +24,7 @@ namespace
 		std::array<char, kScratchSize>		buffer;
 		BoilerEventLoop*					boilerAPI;
 		PressureEventLoop*					pressureAPI;
+		PumpEventLoop*						pumpAPI;
 		std::unique_ptr<UpdaterEventLoop>	updaterEventLoop;
 	};
 }
@@ -132,7 +133,9 @@ static esp_err_t pressure_data_get_handler(httpd_req_t *req)
 
 	httpd_resp_set_type(req, "application/json");
 	cJSON *root = cJSON_CreateObject();
-	cJSON_AddNumberToObject(root, "current", serverCtx->pressureAPI->getPressure());
+	cJSON_AddNumberToObject(root, "current", serverCtx->pumpAPI->getPressure(PumpEventLoop::CurrentPressure));
+	cJSON_AddNumberToObject(root, "target", serverCtx->pumpAPI->getPressure(PumpEventLoop::TargetPressure));
+	cJSON_AddNumberToObject(root, "brew", serverCtx->pumpAPI->getPressure(PumpEventLoop::BrewTargetPressure));
 
 	const char* temps = cJSON_Print(root);
 	httpd_resp_sendstr(req, temps);
@@ -147,11 +150,12 @@ static esp_err_t sys_info_get_handler(httpd_req_t *req)
 	httpd_resp_set_type(req, "application/json");
 	cJSON *root = cJSON_CreateObject();
 	cJSON_AddNumberToObject(root, "free_heap", esp_get_free_heap_size());
+	cJSON_AddNumberToObject(root, "min_free_heap", esp_get_minimum_free_heap_size());
 
-	const char* temps = cJSON_Print(root);
-	httpd_resp_sendstr(req, temps);
+	const char* info = cJSON_Print(root);
+	httpd_resp_sendstr(req, info);
 
-	free((void*)temps);
+	free((void*)info);
 	cJSON_Delete(root);
 	return ESP_OK;
 }
@@ -215,6 +219,7 @@ static esp_err_t update_init_post_handler(httpd_req_t* req)
 	// TODO: Generic shutdown notification system
 	serverCtx->boilerAPI->shutdown();
 	serverCtx->pressureAPI->shutdown();
+	serverCtx->pumpAPI->shutdown();
 
 	httpd_resp_sendstr(req, "Initiated");
 
@@ -254,11 +259,12 @@ static void registerURIHandler(httpd_handle_t server, const char* uri, http_meth
 	httpd_register_uri_handler(server, &http_uri);
 }
 
-RESTServer::RESTServer(BoilerEventLoop* boiler, PressureEventLoop* pressure)
+RESTServer::RESTServer(BoilerEventLoop* boiler, PressureEventLoop* pressure, PumpEventLoop* pump)
 {
 	auto* serverCtx = new ServerCtx;
 	serverCtx->boilerAPI = boiler;
 	serverCtx->pressureAPI = pressure;
+	serverCtx->pumpAPI = pump;
 
 	httpd_handle_t server = nullptr;
 	httpd_config_t config = HTTPD_DEFAULT_CONFIG();

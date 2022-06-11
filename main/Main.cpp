@@ -8,6 +8,7 @@
 
 #include "BoilerEventLoop.hpp"
 #include "PressureEventLoop.hpp"
+#include "PumpEventLoop.hpp"
 #include "TemperatureEventLoop.hpp"
 #include "Wifi.hpp"
 
@@ -23,10 +24,13 @@ static void mainTask(void* pvParameter)
 	ESP_ERROR_CHECK(esp_netif_init());
 	ESP_ERROR_CHECK(esp_event_loop_create_default());
 
-	auto boilerEventLoop = std::make_unique<BoilerEventLoop>();
+	auto pumpEventLoop = std::make_unique<PumpEventLoop>();
+	auto pressureEventLoop = std::make_unique<PressureEventLoop>(pumpEventLoop.get());
+
+	auto boilerEventLoop = std::make_unique<BoilerEventLoop>(pumpEventLoop.get());
 	auto temperatureEventLoop = std::make_unique<TemperatureEventLoop>(boilerEventLoop.get());
-	auto pressureEventLoop = std::make_unique<PressureEventLoop>();
-	auto restServer = std::make_unique<RESTServer>(boilerEventLoop.get(), pressureEventLoop.get());
+
+	auto restServer = std::make_unique<RESTServer>(boilerEventLoop.get(), pressureEventLoop.get(), pumpEventLoop.get());
 
 	boilerEventLoop->setTemperature(BoilerEventLoop::BrewTargetTemp, 93.1f);
 	boilerEventLoop->setTemperature(BoilerEventLoop::SteamTargetTemp, 140.0f);

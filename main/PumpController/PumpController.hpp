@@ -26,7 +26,7 @@ public:
 	void shutdown();
 
 	void updateCurrentPressure(const float pressure) { m_currentPressure = pressure; }
-	void setBrewPressure(const float pressure);
+	void setBrewPressure(float pressure);
 
 	float getCurrentPressure() const { return m_currentPressure; }
 	float getTargetPressure() const { return m_targetPressure; }

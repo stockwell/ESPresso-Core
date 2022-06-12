@@ -32,7 +32,7 @@ void PumpController::shutdown()
 
 void PumpController::setBrewPressure(const float pressure)
 {
-	m_targetPressure = pressure;
+	m_brewPressure = pressure;
 }
 
 void PumpController::start()

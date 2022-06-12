@@ -16,6 +16,9 @@ namespace
 
 		GetPumpState,
 
+		GetPIDTerms,
+		SetPIDTerms,
+
 		StartPump,
 		StopPump,
 
@@ -36,6 +39,17 @@ float PumpEventLoop::getPressure(PressureTypes type)
 PumpController::PumpState PumpEventLoop::getState()
 {
 	return getFromEventLoop(Events::GetPumpState, new std::promise<PumpController::PumpState>());
+}
+
+PumpController::PIDTerms PumpEventLoop::getPIDTerms()
+{
+	return getFromEventLoop(Events::GetPIDTerms, new std::promise<PumpController::PIDTerms>());
+}
+
+void PumpEventLoop::setPIDTerms(PumpController::PIDTerms terms)
+{
+	eventPost(Events::SetPIDTerms, sizeof terms, &terms);
+
 }
 
 void PumpEventLoop::startPump()
@@ -93,6 +107,14 @@ void PumpEventLoop::eventHandler(int32_t eventId, void* data)
 
 	case Events::GetPumpState:
 		EventLoopHelpers::setResponse(m_controller.getState(), data);
+		break;
+
+	case Events::GetPIDTerms:
+		EventLoopHelpers::setResponse(m_controller.getPIDTerms(), data);
+		break;
+
+	case Events::SetPIDTerms:
+		m_controller.setPIDTerms(*static_cast<PumpController::PIDTerms*>(data));
 		break;
 
 	case Events::StartPump:

@@ -34,6 +34,9 @@ public:
 
 	PumpState getState() const { return m_state; }
 
+	PIDTerms getPIDTerms() const { return m_terms; }
+	void setPIDTerms(PIDTerms terms);
+
 private:
 	QuickPID	m_pid;
 	TRIAC		m_triac;
@@ -47,4 +50,5 @@ private:
 	bool 		m_inhibit 			= false;
 
 	PumpState	m_state				= PumpState::Stopped;
+	PIDTerms 	m_terms;
 };

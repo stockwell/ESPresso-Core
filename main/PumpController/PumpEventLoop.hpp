@@ -24,6 +24,9 @@ public:
 	float	getPressure(PressureTypes type);
 
 	PumpController::PumpState getState();
+	PumpController::PIDTerms  getPIDTerms();
+
+	void setPIDTerms(PumpController::PIDTerms);
 
 	void	startPump();
 	void	stopPump();

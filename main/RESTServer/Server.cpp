@@ -72,11 +72,33 @@ static esp_err_t pid_terms_post_handler(httpd_req_t* req)
 		return ESP_FAIL;
 	}
 
-	float Kp = cJSON_GetObjectItem(root, "Kp")->valuedouble;
-	float Ki = cJSON_GetObjectItem(root, "Ki")->valuedouble;
-	float Kd = cJSON_GetObjectItem(root, "Kd")->valuedouble;
+	if (auto boilerPID = cJSON_GetObjectItem(root, "Boiler"); boilerPID != nullptr)
+	{
+		if (cJSON_GetArraySize(boilerPID) == 3)
+		{
+			float Kp = cJSON_GetArrayItem(boilerPID, 0)->valuedouble;
+			float Ki = cJSON_GetArrayItem(boilerPID, 1)->valuedouble;
+			float Kd = cJSON_GetArrayItem(boilerPID, 2)->valuedouble;
 
-	serverCtx->boilerAPI->setPIDTerms({Kp, Ki, Kd});
+			serverCtx->boilerAPI->setPIDTerms({Kp, Ki, Kd});
+		}
+		else
+		{
+			printf("nah\n");
+		}
+	}
+
+	if (auto pumpPID = cJSON_GetObjectItem(root, "Pump"); pumpPID != nullptr)
+	{
+		if (cJSON_GetArraySize(pumpPID) == 3)
+		{
+			float Kp = cJSON_GetArrayItem(pumpPID, 0)->valuedouble;
+			float Ki = cJSON_GetArrayItem(pumpPID, 1)->valuedouble;
+			float Kd = cJSON_GetArrayItem(pumpPID, 2)->valuedouble;
+
+			serverCtx->pumpAPI->setPIDTerms({Kp, Ki, Kd});
+		}
+	}
 
 	cJSON_Delete(root);
 
@@ -88,13 +110,21 @@ static esp_err_t pid_terms_get_handler(httpd_req_t *req)
 {
 	auto* serverCtx = ((ServerCtx*)(req->user_ctx));
 
-	auto [Kp, Ki, Kd] = serverCtx->boilerAPI->getPIDTerms();
+	auto [BoilerKp, BoilerKi, BoilerKd] = serverCtx->boilerAPI->getPIDTerms();
+	auto [PumpKp, PumpKi, PumpKd] = serverCtx->pumpAPI->getPIDTerms();
 
 	httpd_resp_set_type(req, "application/json");
 	cJSON *root = cJSON_CreateObject();
-	cJSON_AddNumberToObject(root, "Kp", Kp);
-	cJSON_AddNumberToObject(root, "Ki", Ki);
-	cJSON_AddNumberToObject(root, "Kd", Kd);
+
+	auto boilerPID = cJSON_AddArrayToObject(root, "BoilerPID");
+	cJSON_AddItemToArray(boilerPID, cJSON_CreateNumber(BoilerKp));
+	cJSON_AddItemToArray(boilerPID, cJSON_CreateNumber(BoilerKi));
+	cJSON_AddItemToArray(boilerPID, cJSON_CreateNumber(BoilerKd));
+
+	auto pumpPID = cJSON_AddArrayToObject(root, "PumpPID");
+	cJSON_AddItemToArray(pumpPID, cJSON_CreateNumber(PumpKp));
+	cJSON_AddItemToArray(pumpPID, cJSON_CreateNumber(PumpKi));
+	cJSON_AddItemToArray(pumpPID, cJSON_CreateNumber(PumpKd));
 
 	const char* temps = cJSON_Print(root);
 	httpd_resp_sendstr(req, temps);

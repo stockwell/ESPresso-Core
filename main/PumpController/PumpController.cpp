@@ -13,6 +13,7 @@ namespace
 PumpController::PumpController()
 	: m_pid(&m_currentPressure, &m_pumpDuty, &m_targetPressure, kDefaultKp, kDefaultKi, kDefaultKd, QuickPID::Action::direct)
 	, m_triac(kGPIOPin_TRIAC_Gate, kGPIOPin_TRIAC_ZC)
+	, m_terms(kDefaultKp, kDefaultKi, kDefaultKd)
 {
 	m_pid.SetOutputLimits(0, 100);
 	m_pid.SetMode(QuickPID::Control::automatic);
@@ -33,6 +34,18 @@ void PumpController::shutdown()
 void PumpController::setBrewPressure(const float pressure)
 {
 	m_brewPressure = pressure;
+}
+
+void PumpController::setPIDTerms(PIDTerms terms)
+{
+	if (terms == m_terms)
+		return;
+
+	m_terms = terms;
+
+	auto [Kp, Ki, Kd] = terms;
+
+	m_pid.SetTunings(Kp, Ki, Kd);
 }
 
 void PumpController::start()

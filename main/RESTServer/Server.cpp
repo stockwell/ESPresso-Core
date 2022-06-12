@@ -106,9 +106,7 @@ static esp_err_t pid_terms_get_handler(httpd_req_t *req)
 
 static esp_err_t temperature_data_get_handler(httpd_req_t *req)
 {
-	auto* serverCtx = ((ServerCtx*)(req->user_ctx));
-
-	auto* boilerAPI = serverCtx->boilerAPI;
+	auto* boilerAPI = ((ServerCtx*)(req->user_ctx))->boilerAPI;
 
 	httpd_resp_set_type(req, "application/json");
 	cJSON *root = cJSON_CreateObject();
@@ -129,13 +127,15 @@ static esp_err_t temperature_data_get_handler(httpd_req_t *req)
 
 static esp_err_t pressure_data_get_handler(httpd_req_t *req)
 {
-	auto* serverCtx = ((ServerCtx*)(req->user_ctx));
+	auto* pumpAPI = ((ServerCtx*)(req->user_ctx))->pumpAPI;
 
 	httpd_resp_set_type(req, "application/json");
 	cJSON *root = cJSON_CreateObject();
-	cJSON_AddNumberToObject(root, "current", serverCtx->pumpAPI->getPressure(PumpEventLoop::CurrentPressure));
-	cJSON_AddNumberToObject(root, "target", serverCtx->pumpAPI->getPressure(PumpEventLoop::TargetPressure));
-	cJSON_AddNumberToObject(root, "brew", serverCtx->pumpAPI->getPressure(PumpEventLoop::BrewTargetPressure));
+	cJSON_AddNumberToObject(root, "current", pumpAPI->getPressure(PumpEventLoop::CurrentPressure));
+	cJSON_AddNumberToObject(root, "target", pumpAPI->getPressure(PumpEventLoop::TargetPressure));
+	cJSON_AddNumberToObject(root, "brew", pumpAPI->getPressure(PumpEventLoop::BrewTargetPressure));
+
+	cJSON_AddNumberToObject(root, "state",  static_cast<int>(pumpAPI->getState()));
 
 	const char* temps = cJSON_Print(root);
 	httpd_resp_sendstr(req, temps);
@@ -179,6 +179,29 @@ static esp_err_t temperature_data_post_handler(httpd_req_t* req)
 
 	if (cJSON_HasObjectItem(root, "steamTarget"))
 		serverCtx->boilerAPI->setTemperature(BoilerEventLoop::SteamTargetTemp, cJSON_GetObjectItem(root, "steamTarget")->valuedouble);
+
+	cJSON_Delete(root);
+
+	httpd_resp_sendstr(req, "");
+	return ESP_OK;
+}
+
+static esp_err_t pressure_data_post_handler(httpd_req_t* req)
+{
+	if (auto err = validate_post_request(req); err != ESP_OK)
+		return err;
+
+	auto* serverCtx = ((ServerCtx*)(req->user_ctx));
+
+	cJSON* root = cJSON_Parse(serverCtx->buffer.data());
+	if (! root)
+	{
+		httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to post control value");
+		return ESP_FAIL;
+	}
+
+	if (cJSON_HasObjectItem(root, "brewTarget"))
+		serverCtx->pumpAPI->setPressure(PumpEventLoop::BrewTargetPressure, cJSON_GetObjectItem(root, "brewTarget")->valuedouble);
 
 	cJSON_Delete(root);
 
@@ -281,6 +304,7 @@ RESTServer::RESTServer(BoilerEventLoop* boiler, PressureEventLoop* pressure, Pum
 	registerURIHandler(server, "/api/v1/pid/terms", HTTP_POST, pid_terms_post_handler, serverCtx);
 
 	registerURIHandler(server, "/api/v1/pressure/raw", HTTP_GET, pressure_data_get_handler, serverCtx);
+	registerURIHandler(server, "/api/v1/pressure/raw", HTTP_POST, pressure_data_post_handler, serverCtx);
 
 	registerURIHandler(server, "/api/v1/update/initiate", HTTP_POST, update_init_post_handler, serverCtx);
 	registerURIHandler(server, "/api/v1/update/status", HTTP_GET, update_status_get_handler, serverCtx);

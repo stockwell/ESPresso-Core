@@ -23,6 +23,8 @@ public:
 	void	setPressure(PressureTypes type, float pressure);
 	float	getPressure(PressureTypes type);
 
+	PumpController::PumpState getState();
+
 	void	startPump();
 	void	stopPump();
 	void	shutdown();

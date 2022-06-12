@@ -14,6 +14,8 @@ namespace
 		GetTargetPressure,
 		GetBrewPressure,
 
+		GetPumpState,
+
 		StartPump,
 		StopPump,
 
@@ -29,6 +31,11 @@ void PumpEventLoop::setPressure(PressureTypes type, float pressure)
 float PumpEventLoop::getPressure(PressureTypes type)
 {
 	return getFromEventLoop(Events::GetCurrentPressure + type, new std::promise<float>());
+}
+
+PumpController::PumpState PumpEventLoop::getState()
+{
+	return getFromEventLoop(Events::GetPumpState, new std::promise<PumpController::PumpState>());
 }
 
 void PumpEventLoop::startPump()
@@ -82,6 +89,18 @@ void PumpEventLoop::eventHandler(int32_t eventId, void* data)
 
 	case Events::GetBrewPressure:
 		EventLoopHelpers::setResponse(m_controller.getBrewPressure(), data);
+		break;
+
+	case Events::GetPumpState:
+		EventLoopHelpers::setResponse(m_controller.getState(), data);
+		break;
+
+	case Events::StartPump:
+		m_controller.start();
+		break;
+
+	case Events::StopPump:
+		m_controller.stop();
 		break;
 
 	case Events::Shutdown:

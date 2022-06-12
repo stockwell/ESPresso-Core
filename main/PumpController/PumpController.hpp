@@ -10,6 +10,12 @@ class PumpController
 public:
 	using PIDTerms = std::tuple<float, float, float>;
 
+	enum class PumpState
+	{
+		Running,
+		Stopped,
+	};
+
 	PumpController();
 
 	void tick();
@@ -26,6 +32,8 @@ public:
 	float getTargetPressure() const { return m_targetPressure; }
 	float getBrewPressure() const { return m_brewPressure; }
 
+	PumpState getState() const { return m_state; }
+
 private:
 	QuickPID	m_pid;
 	TRIAC		m_triac;
@@ -37,4 +45,6 @@ private:
 	float 		m_pumpDuty			= 0.0f;
 
 	bool 		m_inhibit 			= false;
+
+	PumpState	m_state				= PumpState::Stopped;
 };

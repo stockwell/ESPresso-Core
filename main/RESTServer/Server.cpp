@@ -72,7 +72,7 @@ static esp_err_t pid_terms_post_handler(httpd_req_t* req)
 		return ESP_FAIL;
 	}
 
-	if (auto boilerPID = cJSON_GetObjectItem(root, "Boiler"); boilerPID != nullptr)
+	if (auto boilerPID = cJSON_GetObjectItem(root, "BoilerPID"); boilerPID != nullptr)
 	{
 		if (cJSON_GetArraySize(boilerPID) == 3)
 		{
@@ -82,13 +82,9 @@ static esp_err_t pid_terms_post_handler(httpd_req_t* req)
 
 			serverCtx->boilerAPI->setPIDTerms({Kp, Ki, Kd});
 		}
-		else
-		{
-			printf("nah\n");
-		}
 	}
 
-	if (auto pumpPID = cJSON_GetObjectItem(root, "Pump"); pumpPID != nullptr)
+	if (auto pumpPID = cJSON_GetObjectItem(root, "PumpPID"); pumpPID != nullptr)
 	{
 		if (cJSON_GetArraySize(pumpPID) == 3)
 		{
@@ -322,6 +318,7 @@ RESTServer::RESTServer(BoilerEventLoop* boiler, PressureEventLoop* pressure, Pum
 	httpd_handle_t server = nullptr;
 	httpd_config_t config = HTTPD_DEFAULT_CONFIG();
 	config.uri_match_fn = httpd_uri_match_wildcard;
+	config.max_uri_handlers = 16;
 
 	ESP_LOGI(__FUNCTION__, "Starting HTTP Server");
 	if (auto err = httpd_start(&server, &config); err != ESP_OK)

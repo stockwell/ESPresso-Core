@@ -2,9 +2,9 @@
 
 namespace
 {
-	constexpr float kDefaultKp = 150.0f;
-	constexpr float kDefaultKi = 10.0f;
-	constexpr float kDefaultKd = 300.0f;
+	constexpr float kDefaultKp = 100.0f;
+	constexpr float kDefaultKi = 50.0f;
+	constexpr float kDefaultKd = 115.0f;
 
 	constexpr auto kGPIOPin_SSR = GPIO_NUM_39;
 	constexpr auto kGPIOPin_BrewSwitch = GPIO_NUM_11;
@@ -22,7 +22,7 @@ BoilerController::BoilerController(PumpEventLoop* pumpAPI)
 	, m_terms(kDefaultKp, kDefaultKi, kDefaultKd)
 	, m_pumpAPI(pumpAPI)
 {
-	m_pid.SetSampleTimeUs(100000);
+	m_pid.SetSampleTimeUs(200000);
 	m_pid.SetOutputLimits(0, 1024);
 	m_pid.SetMode(QuickPID::Control::automatic);
 

@@ -7,11 +7,12 @@ namespace
 	constexpr float kDefaultKd = 115.0f;
 
 	constexpr auto kGPIOPin_SSR = GPIO_NUM_39;
-	constexpr auto kGPIOPin_BrewSwitch = GPIO_NUM_11;
-	constexpr auto kGPIOPin_SteamSwitch = GPIO_NUM_10;
+	constexpr auto kGPIOPin_BrewSwitch = GPIO_NUM_10;
+	constexpr auto kGPIOPin_SteamSwitch = GPIO_NUM_11;
 
 	constexpr auto kBrewTempMax = 100.0f;
-	constexpr auto kShutdownTemp = 160.0f;
+	constexpr auto kShutdownTempUpper = 160.0f;
+	constexpr auto kShutdownTempLower = -10.0f;
 }
 
 BoilerController::BoilerController(PumpEventLoop* pumpAPI)
@@ -22,8 +23,8 @@ BoilerController::BoilerController(PumpEventLoop* pumpAPI)
 	, m_terms(kDefaultKp, kDefaultKi, kDefaultKd)
 	, m_pumpAPI(pumpAPI)
 {
-	m_pid.SetSampleTimeUs(200000);
 	m_pid.SetOutputLimits(0, 1024);
+	m_pid.SetSampleTimeUs(200 * 1000);
 	m_pid.SetMode(QuickPID::Control::automatic);
 
 	gpio_config_t gpioConfig = {};
@@ -55,7 +56,7 @@ void BoilerController::setBrewTargetTemp(float temp)
 
 void BoilerController::setSteamTargetTemp(float temp)
 {
-	if (temp < kShutdownTemp)
+	if (temp < kShutdownTempUpper)
 		m_steamTemp = temp;
 }
 
@@ -76,7 +77,7 @@ void BoilerController::tick()
 	if (m_inhibit)
 		return;
 
-	if (m_currentTemp > kShutdownTemp)
+	if (m_currentTemp < kShutdownTempLower || m_currentTemp > kShutdownTempUpper)
 	{
 		shutdown();
 		return;
@@ -99,9 +100,9 @@ void BoilerController::tick()
 	else
 		m_targetTemp = m_brewTemp;
 
-	m_pid.Compute();
+	if (m_pid.Compute())
+		m_ssr.update(static_cast<int>(m_outputPower));
 
-	m_ssr.update(static_cast<int>(m_outputPower));
 }
 
 void BoilerController::shutdown()

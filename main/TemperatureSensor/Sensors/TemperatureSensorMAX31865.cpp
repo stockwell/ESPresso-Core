@@ -1,4 +1,5 @@
 #include "TemperatureSensorMAX31865.hpp"
+#include "driver/gpio.h"
 
 namespace
 {
@@ -15,7 +16,7 @@ namespace
 }
 
 TemperatureSensorMAX31865::TemperatureSensorMAX31865()
-	: m_sensor(kGPIOPinMISO, kGPIOPinMOSI, kGPIOPinSCLK, kGPIOPinCS, kGPIOPinDRDY)
+	: m_sensor(kGPIOPinMISO, kGPIOPinMOSI, kGPIOPinSCLK, kGPIOPinCS)
 {
 	const max31865_config_t config =
 	{
@@ -40,6 +41,9 @@ float TemperatureSensorMAX31865::GetTemperature()
 
 	uint16_t rtd		= 0;
 	Max31865Error fault	= Max31865Error::NoError;
+
+	while (gpio_get_level(static_cast<gpio_num_t>(CONFIG_MAX31865_PIN_DRDY)) == 1)
+		vTaskDelay(1);
 
 	m_sensor.getRTD(&rtd, &fault);
 	m_sensor.clearFault();

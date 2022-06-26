@@ -13,7 +13,7 @@ public:
 
 	void			IRAM_ATTR GpioISR();
 
-	void 			setDuty(uint16_t value) { if (value <= 100) m_duty = value; }
+	void 			setDuty(uint16_t value) { if (value <= 1000) m_duty = value / 20; }
 
 
 private:
@@ -26,7 +26,7 @@ private:
 
 	uint16_t m_halfCycleCount			= 0;
 	uint16_t m_onHalfCycles				= 0;
-	uint16_t m_periodHalfCycles			= 100;
+	uint16_t m_periodHalfCycles			= 50;
 	uint16_t m_duty						= 0;
 
 	gpio_num_t m_GPIOPinGate			= GPIO_NUM_NC;

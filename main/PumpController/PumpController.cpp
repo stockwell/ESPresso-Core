@@ -2,12 +2,12 @@
 
 namespace
 {
-	constexpr float kDefaultKp = 1.0f;
-	constexpr float kDefaultKi = 1.0f;
+	constexpr float kDefaultKp = 100.0f;
+	constexpr float kDefaultKi = 10.0f;
 	constexpr float kDefaultKd = 1.0f;
 
-	constexpr gpio_num_t kGPIOPin_TRIAC_Gate = GPIO_NUM_6;
-	constexpr gpio_num_t kGPIOPin_TRIAC_ZC = GPIO_NUM_7;
+	constexpr gpio_num_t kGPIOPin_TRIAC_Gate = GPIO_NUM_46;
+	constexpr gpio_num_t kGPIOPin_TRIAC_ZC = GPIO_NUM_3;
 }
 
 PumpController::PumpController()
@@ -15,13 +15,19 @@ PumpController::PumpController()
 	, m_triac(kGPIOPin_TRIAC_Gate, kGPIOPin_TRIAC_ZC)
 	, m_terms(kDefaultKp, kDefaultKi, kDefaultKd)
 {
-	m_pid.SetOutputLimits(0, 100);
+	m_pid.SetOutputLimits(0, 1000);
 	m_pid.SetMode(QuickPID::Control::automatic);
+	m_pid.SetSampleTimeUs(200 * 1000);
 }
 
 void PumpController::tick()
 {
-	m_pid.Compute();
+	if (m_inhibit || m_state != PumpState::Running)
+		return;
+
+	if (m_pid.Compute())
+		m_triac.setDuty(static_cast<int>(m_pumpDuty));
+
 }
 
 void PumpController::shutdown()
@@ -54,9 +60,19 @@ void PumpController::start()
 		return;
 
 	m_targetPressure = m_brewPressure;
+
+	m_state = PumpState::Running;
+
+	m_pid.SetMode(QuickPID::Control::automatic);
 }
 
 void PumpController::stop()
 {
+	m_state = PumpState::Stopped;
+
 	m_targetPressure = 0.0f;
+
+	m_pid.SetMode(QuickPID::Control::manual);
+
+	m_triac.setDuty(0);
 }

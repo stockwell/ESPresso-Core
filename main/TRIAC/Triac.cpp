@@ -61,7 +61,7 @@ TRIAC::TRIAC(gpio_num_t GPIOPinGate, gpio_num_t GPIOPinZeroCrossing)
 	gpioConfig.pin_bit_mask = 1ULL << GPIOPinGate,
 	gpioConfig.mode = GPIO_MODE_OUTPUT,
 	gpio_config(&gpioConfig);
-	gpio_set_level(GPIOPinGate, 1);
+	gpio_set_level(GPIOPinGate, 0);
 
 	// Init Zero Crossing Pin
 	gpioConfig.pin_bit_mask = 1ULL << m_GPIOPinZeroCrossing;

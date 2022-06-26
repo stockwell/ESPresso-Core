@@ -31,7 +31,7 @@ ADS1115::ADS1115(i2c_port_t i2c_port, uint8_t address)
 {
 	m_config.bit.OS			= 1; // always start conversion
 	m_config.bit.MUX		= Mux::MUX_0_GND;
-	m_config.bit.PGA		= Resolution::FSR_4_096;
+	m_config.bit.PGA		= Resolution::FSR_6_144;
 	m_config.bit.MODE		= Mode::SINGLE;
 	m_config.bit.DR			= SPS::SPS_64;
 	m_config.bit.COMP_MODE	= 0;

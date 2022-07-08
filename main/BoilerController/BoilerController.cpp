@@ -7,8 +7,8 @@ namespace
 	constexpr float kDefaultKd = 115.0f;
 
 	constexpr auto kGPIOPin_SSR = GPIO_NUM_39;
-	constexpr auto kGPIOPin_BrewSwitch = GPIO_NUM_10;
-	constexpr auto kGPIOPin_SteamSwitch = GPIO_NUM_11;
+	constexpr auto kGPIOPin_BrewSwitch = GPIO_NUM_40;
+	constexpr auto kGPIOPin_SteamSwitch = GPIO_NUM_41;
 
 	constexpr auto kBrewTempMax = 100.0f;
 	constexpr auto kShutdownTempUpper = 160.0f;

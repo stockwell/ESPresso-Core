@@ -6,8 +6,8 @@ namespace
 	constexpr float kDefaultKi = 10.0f;
 	constexpr float kDefaultKd = 1.0f;
 
-	constexpr gpio_num_t kGPIOPin_TRIAC_Gate = GPIO_NUM_46;
-	constexpr gpio_num_t kGPIOPin_TRIAC_ZC = GPIO_NUM_3;
+	constexpr gpio_num_t kGPIOPin_TRIAC_Gate = GPIO_NUM_11;
+	constexpr gpio_num_t kGPIOPin_TRIAC_ZC = GPIO_NUM_10;
 }
 
 PumpController::PumpController()
@@ -25,9 +25,13 @@ void PumpController::tick()
 	if (m_inhibit || m_state != PumpState::Running)
 		return;
 
-	if (m_pid.Compute())
-		m_triac.setDuty(static_cast<int>(m_pumpDuty));
+	if (m_pid.Ready())
+	{
+		m_currentPressure = m_averagePressure.get();
 
+		m_pid.Compute();
+		m_triac.setDuty(static_cast<int>(m_pumpDuty));
+	}
 }
 
 void PumpController::shutdown()
@@ -35,6 +39,11 @@ void PumpController::shutdown()
 	m_inhibit = true;
 	m_targetPressure = 0.0f;
 	m_triac.setDuty(0);
+}
+
+void PumpController::updateCurrentPressure(const float pressure)
+{
+	m_averagePressure(pressure);
 }
 
 void PumpController::setBrewPressure(const float pressure)

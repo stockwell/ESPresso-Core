@@ -2,6 +2,8 @@
 
 #include <memory>
 
+#include "Lib/RollingAverage.hpp"
+
 #include "QuickPID.h"
 #include "Triac.hpp"
 
@@ -25,7 +27,7 @@ public:
 
 	void shutdown();
 
-	void updateCurrentPressure(const float pressure) { m_currentPressure = pressure; }
+	void updateCurrentPressure(const float pressure);
 	void setBrewPressure(float pressure);
 
 	float getCurrentPressure() const { return m_currentPressure; }
@@ -40,6 +42,9 @@ public:
 private:
 	QuickPID	m_pid;
 	TRIAC		m_triac;
+
+	RollingAverage<float, float, 10> m_averagePressure;
+
 
 	float		m_currentPressure	= 0.0f;
 	float		m_targetPressure	= 0.0f;

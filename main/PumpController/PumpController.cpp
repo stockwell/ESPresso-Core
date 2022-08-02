@@ -15,9 +15,9 @@ PumpController::PumpController()
 	, m_triac(kGPIOPin_TRIAC_Gate, kGPIOPin_TRIAC_ZC)
 	, m_terms(kDefaultKp, kDefaultKi, kDefaultKd)
 {
-	m_pid.SetOutputLimits(0, 1000);
+	m_pid.SetOutputLimits(0, 500);
 	m_pid.SetMode(QuickPID::Control::automatic);
-	m_pid.SetSampleTimeUs(200 * 1000);
+	m_pid.SetSampleTimeUs(50 * 1000);
 }
 
 void PumpController::tick()
@@ -27,8 +27,6 @@ void PumpController::tick()
 
 	if (m_pid.Ready())
 	{
-		m_currentPressure = m_averagePressure.get();
-
 		m_pid.Compute();
 		m_triac.setDuty(static_cast<int>(m_pumpDuty));
 	}
@@ -44,6 +42,8 @@ void PumpController::shutdown()
 void PumpController::updateCurrentPressure(const float pressure)
 {
 	m_averagePressure(pressure);
+
+	m_currentPressure = m_averagePressure.get();
 }
 
 void PumpController::setBrewPressure(const float pressure)

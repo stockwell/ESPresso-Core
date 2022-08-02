@@ -9,12 +9,11 @@ class TRIAC
 {
 
 public:
-	explicit		TRIAC(gpio_num_t GPIOPinGate, gpio_num_t GPIOPinZeroCrossing);
+	explicit TRIAC(gpio_num_t GPIOPinGate, gpio_num_t GPIOPinZeroCrossing);
 
-	void			IRAM_ATTR GpioISR();
+	void IRAM_ATTR GpioISR();
 
-	void 			setDuty(uint16_t value) { if (value <= 1000) m_duty = value / 20; }
-
+	void setDuty(uint16_t value) { if (value <= 500) m_duty = value / 10; }
 
 private:
 	static void		IRAM_ATTR GpioAdapter(void* triac);

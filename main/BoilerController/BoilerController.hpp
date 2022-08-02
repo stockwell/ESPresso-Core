@@ -3,6 +3,8 @@
 #include "PumpEventLoop.hpp"
 #include "SSR.hpp"
 
+#include "Lib/RollingAverage.hpp"
+
 #include "QuickPID.h"
 
 #include <memory>
@@ -44,6 +46,8 @@ private:
 
 	const gpio_num_t	m_brewSwitchGPIO;
 	const gpio_num_t	m_steamSwitchGPIO;
+
+	RollingAverage<float, float, 10> m_averageTemp;
 
 	float		m_brewTemp    = 0.0;
 	float		m_steamTemp   = 0.0;

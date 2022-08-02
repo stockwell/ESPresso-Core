@@ -62,7 +62,7 @@ BoilerEventLoop::BoilerEventLoop(PumpEventLoop* pumpAPI)
 	: EventLoop("BoilerEvent")
 	, m_controller(pumpAPI)
 {
-	m_timer = std::make_unique<Timer>(100, [this]() {
+	m_timer = std::make_unique<Timer>(10, [this]() {
 		eventPost(Events::TickTimerElapsed);
 	});
 

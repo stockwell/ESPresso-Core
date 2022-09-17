@@ -4,23 +4,19 @@
 #include "esp_log.h"
 #include "esp_netif.h"
 #include "esp_system.h"
+#include "mdns.h"
 
-#include <string_view>
+#include "Secrets.hpp"
 
 #include "Wifi.hpp"
 
-#include "mdns.h"
+#include <string_view>
 
 namespace
 {
-	// TODO: sdkconfig
 	constexpr std::string_view kSoftAP_ssid 	= "CoffeeDirect";
 	constexpr std::string_view kSoftAP_password	= "pixel-archway-cajole";
 	constexpr auto kSoftAP_channel				= 6;
-
-	// Congratulations! You now know my home wifi credentials!!
-	constexpr std::string_view kSTA_ssid		= "HomeNetwork";
-	constexpr std::string_view kSTA_password	= "mattsarah";
 
 	const char* TAG = "Wifi";
 	static xSemaphoreHandle s_semaphoreGetIP;
@@ -106,8 +102,8 @@ static void InitSTA()
 	wifi_config_t wifi_config = {};
 	auto* sta = &wifi_config.sta;
 
-	kSTA_ssid.copy((char*)sta->ssid, kSTA_ssid.size());
-	kSTA_password.copy((char*)sta->password, kSTA_password.size());
+	Secrets::kSTA_ssid.copy((char*)sta->ssid, Secrets::kSTA_ssid.size());
+	Secrets::kSTA_password.copy((char*)sta->password, Secrets::kSTA_password.size());
 
 	sta->scan_method = WIFI_ALL_CHANNEL_SCAN;
 	sta->sort_method = WIFI_CONNECT_AP_BY_SIGNAL;

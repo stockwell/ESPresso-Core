@@ -10,7 +10,8 @@
 #include "PressureEventLoop.hpp"
 #include "PumpEventLoop.hpp"
 #include "TemperatureEventLoop.hpp"
-#include "Wifi.hpp"
+
+#include "Lib/Wifi.hpp"
 
 static void mainTask(void* pvParameter)
 {

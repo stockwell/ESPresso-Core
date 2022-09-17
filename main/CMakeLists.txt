@@ -13,6 +13,7 @@ set(INCLUDES
         ADC
         SSR
         TRIAC
+        ../Secrets
 )
 
 set(REQUIRES

@@ -2,35 +2,35 @@
 
 #include "Updater.hpp"
 
-#include <future>
-
 namespace
 {
 	enum Events
 	{
-		UpdateTimeout,
-
 		Initiate,
 	};
 }
 
-bool UpdaterEventLoop::initiateUpdate(Updater::UpdateRequest& request)
+bool UpdaterEventLoop::initiateUpdate(UpdateRequest& request)
 {
-	eventPost(Events::Initiate, sizeof(request), &request);
+	eventPost(Events::Initiate, sizeof request, &request);
 	return true;
 }
 
 UpdaterEventLoop::UpdateStatus UpdaterEventLoop::getUpdateStatus()
 {
-	UpdateStatus status = {};
+	UpdateStatus status;
+	{
+		std::scoped_lock lock(m_lock);
+		status = m_updater->getStatus();
+	}
 
 	return status;
 }
 
 UpdaterEventLoop::UpdaterEventLoop()
-	: EventLoop("UpdaterEventLoop", 8192)
+	: EventLoop("UpdaterEventLoop")
 {
-
+	m_updater = std::make_unique<Updater>();
 }
 
 void UpdaterEventLoop::eventHandler(int32_t eventId, void* data)
@@ -39,9 +39,8 @@ void UpdaterEventLoop::eventHandler(int32_t eventId, void* data)
 	{
 		case Events::Initiate:
 		{
-			const auto request = *static_cast<Updater::UpdateRequest*>(data);
-
-			m_updater.initiate(request);
+			const auto request = *static_cast<UpdateRequest*>(data);
+			m_updater->initiate(request);
 			break;
 		}
 	}

@@ -30,7 +30,7 @@ static void mainTask(void* pvParameter)
 	auto boilerEventLoop = std::make_unique<BoilerEventLoop>(pumpEventLoop.get());
 	auto temperatureEventLoop = std::make_unique<TemperatureEventLoop>(boilerEventLoop.get());
 
-	auto restServer = std::make_unique<RESTServer>(boilerEventLoop.get(), pressureEventLoop.get(), pumpEventLoop.get());
+	auto restServer = std::make_unique<RESTServer>(boilerEventLoop.get(), pressureEventLoop.get(), pumpEventLoop.get(), temperatureEventLoop.get());
 
 	boilerEventLoop->setTemperature(BoilerEventLoop::BrewTargetTemp, 93.1f);
 	boilerEventLoop->setTemperature(BoilerEventLoop::SteamTargetTemp, 140.0f);

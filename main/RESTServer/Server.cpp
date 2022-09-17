@@ -14,6 +14,7 @@
 
 #include "RESTServer/Server.hpp"
 
+#include "Updater.hpp"
 #include "UpdaterEventLoop.hpp"
 
 namespace
@@ -25,6 +26,7 @@ namespace
 		BoilerEventLoop*					boilerAPI;
 		PressureEventLoop*					pressureAPI;
 		PumpEventLoop*						pumpAPI;
+		TemperatureEventLoop*				temperatureAPI;
 		std::unique_ptr<UpdaterEventLoop>	updaterEventLoop;
 	};
 }
@@ -248,20 +250,28 @@ static esp_err_t update_init_post_handler(httpd_req_t* req)
 	cJSON* root = cJSON_Parse(serverCtx->buffer.data());
 	if (! root)
 	{
-		httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to post control value");
+		httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, nullptr);
 		return ESP_FAIL;
 	}
 
-	auto* url = cJSON_GetObjectItem(root, "URL")->valuestring;
-	auto* uuid = cJSON_GetObjectItem(root, "UUID")->valuestring;
+	const auto* url = cJSON_GetObjectItem(root, "URL");
+	const auto* uuid = cJSON_GetObjectItem(root, "UUID");
+	const auto* size = cJSON_GetObjectItem(root, "filesize");
 
-	Updater::UpdateRequest request = {};
-	strncpy(request.URL, url, sizeof(request.URL)-1);
-	strncpy(request.UUID, uuid, sizeof(request.UUID)-1);
+	if (! url || ! uuid || ! size)
+	{
+		httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, nullptr);
+		return ESP_FAIL;
+	}
+
+	UpdaterEventLoop::UpdateRequest request = {};
+	strncpy(request.URL, url->valuestring, sizeof request.URL - 1);
+	strncpy(request.UUID, uuid->valuestring, sizeof request.UUID - 1);
+	request.filesize = size->valueint;
 
 	if (! serverCtx->updaterEventLoop->initiateUpdate(request))
 	{
-		httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to post control value");
+		httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, nullptr);
 		return ESP_FAIL;
 	}
 
@@ -269,8 +279,9 @@ static esp_err_t update_init_post_handler(httpd_req_t* req)
 	serverCtx->boilerAPI->shutdown();
 	serverCtx->pressureAPI->shutdown();
 	serverCtx->pumpAPI->shutdown();
+	serverCtx->temperatureAPI->shutdown();
 
-	httpd_resp_sendstr(req, "Initiated");
+	httpd_resp_sendstr(req, "Update Initiated");
 
 	return ESP_OK;
 }
@@ -278,7 +289,11 @@ static esp_err_t update_init_post_handler(httpd_req_t* req)
 static esp_err_t update_status_get_handler(httpd_req_t* req)
 {
 	auto* serverCtx = ((ServerCtx*)(req->user_ctx));
-	auto status = serverCtx->updaterEventLoop->getUpdateStatus();
+
+	UpdaterEventLoop::UpdateStatus status = {};
+
+	if (serverCtx->updaterEventLoop != nullptr)
+		status = serverCtx->updaterEventLoop->getUpdateStatus();
 
 	httpd_resp_set_type(req, "application/json");
 	cJSON *root = cJSON_CreateObject();
@@ -286,10 +301,10 @@ static esp_err_t update_status_get_handler(httpd_req_t* req)
 	cJSON_AddNumberToObject(root, "progress", status.progress);
 	cJSON_AddStringToObject(root, "uuid", status.UUID.c_str());
 
-	const char* temps = cJSON_Print(root);
-	httpd_resp_sendstr(req, temps);
+	const char* statusJSON = cJSON_Print(root);
+	httpd_resp_sendstr(req, statusJSON);
 
-	free((void*)temps);
+	free((void*)statusJSON);
 	cJSON_Delete(root);
 
 	return ESP_OK;
@@ -308,12 +323,13 @@ static void registerURIHandler(httpd_handle_t server, const char* uri, http_meth
 	httpd_register_uri_handler(server, &http_uri);
 }
 
-RESTServer::RESTServer(BoilerEventLoop* boiler, PressureEventLoop* pressure, PumpEventLoop* pump)
+RESTServer::RESTServer(BoilerEventLoop* boiler, PressureEventLoop* pressure, PumpEventLoop* pump, TemperatureEventLoop* temp)
 {
 	auto* serverCtx = new ServerCtx;
 	serverCtx->boilerAPI = boiler;
 	serverCtx->pressureAPI = pressure;
 	serverCtx->pumpAPI = pump;
+	serverCtx->temperatureAPI = temp;
 
 	httpd_handle_t server = nullptr;
 	httpd_config_t config = HTTPD_DEFAULT_CONFIG();

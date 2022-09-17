@@ -12,4 +12,4 @@
 	url = git@github.com:espressif/esp-idf.git
 [submodule "vendor/ESP32-MAX31865"]
 	path = vendor/ESP32-MAX31865
-	url = https://github.com/jamieparkinson/ESP32-MAX31865.git
+	url = https://github.com/stockwell/ESP32-MAX31865.git

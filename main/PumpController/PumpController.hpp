@@ -1,6 +1,8 @@
 #pragma once
 
 #include <memory>
+#include <chrono>
+
 
 #include "Lib/RollingAverage.hpp"
 
@@ -40,11 +42,13 @@ public:
 	void setPIDTerms(PIDTerms terms);
 
 private:
+	void setPressureFromProfile();
+
+private:
 	QuickPID	m_pid;
 	TRIAC		m_triac;
 
-	RollingAverage<float, float, 10> m_averagePressure;
-
+	RollingAverage<float, float, 8> m_averageDuty;
 
 	float		m_currentPressure	= 0.0f;
 	float		m_targetPressure	= 0.0f;
@@ -56,4 +60,6 @@ private:
 
 	PumpState	m_state				= PumpState::Stopped;
 	PIDTerms 	m_terms;
+
+	std::chrono::time_point<std::chrono::system_clock>	m_startTime;
 };

@@ -49,7 +49,6 @@ PumpController::PIDTerms PumpEventLoop::getPIDTerms()
 void PumpEventLoop::setPIDTerms(PumpController::PIDTerms terms)
 {
 	eventPost(Events::SetPIDTerms, sizeof terms, &terms);
-
 }
 
 void PumpEventLoop::startPump()

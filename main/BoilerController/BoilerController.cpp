@@ -27,6 +27,7 @@ BoilerController::BoilerController(PumpEventLoop* pumpAPI)
 	m_pid.SetOutputLimits(0, 1024);
 	m_pid.SetSampleTimeUs(50 * 1000);
 	m_pid.SetMode(QuickPID::Control::automatic);
+	m_pid.SetProportionalMode(QuickPID::pMode::pOnErrorMeas);
 
 	gpio_config_t gpioConfig = {};
 
@@ -88,7 +89,6 @@ void BoilerController::tick()
 		return;
 	}
 
-	//TODO: Trigger pump, and actually use the Heating state..
 	if (gpio_get_level(m_brewSwitchGPIO) == 0)
 	{
 		m_state = BoilerState::Brewing;

@@ -177,6 +177,9 @@ void Updater::run(const UpdaterEventLoop::UpdateRequest& request)
 		return;
 	}
 
-	printf("Update: Complete!\n");
+	printf("Update: Complete, restarting..\n");
+
+	// Delay for 1s to allow for server to get final status
+	vTaskDelay(pdMS_TO_TICKS(1000));
 	esp_restart();
 }

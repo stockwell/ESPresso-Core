@@ -6,8 +6,16 @@ from aiohttp import web
 import socket
 import uuid
 import os
-import progressbar
 
+from rich.progress import (
+    BarColumn,
+    DownloadColumn,
+    Progress,
+    TaskID,
+    TextColumn,
+    TimeRemainingColumn,
+    TransferSpeedColumn,
+)
 
 def get_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -25,47 +33,51 @@ def get_ip():
 async def initiate():
     expected_size = os.path.getsize('update.bin')
 
-    base_url = "http://coffee.local/api/v1/update/"
+    with Progress(
+            TextColumn("[bold blue]{task.fields[filename]}", justify="right"),
+            BarColumn(),
+            "[progress.percentage]{task.percentage:>3.1f}%",
+            "|",
+            DownloadColumn(),
+            "|",
+            TransferSpeedColumn(),
+            "|",
+            TimeRemainingColumn()) as progress:
 
-    request = {
-        'URL': 'http://' + str(get_ip()) + ':8080/update.bin',
-        'UUID': str(uuid.uuid4()),
-        'filesize': expected_size,
-    }
+        base_url = "http://coffee.local/api/v1/update/"
 
-    print(f"Initiating update from {request['URL']} with UUID: {request['UUID']}...")
-    runner = await create_server()
+        request = {
+            'URL': 'http://' + str(get_ip()) + ':8080/update.bin',
+            'UUID': str(uuid.uuid4()),
+            'filesize': expected_size,
+        }
 
+        progress.print(f"Initiating update from {request['URL']} with UUID: {request['UUID']}...")
+        runner = await create_server()
 
-    try:
-        timeout = aiohttp.ClientTimeout(total=None, connect=15)
-        async with aiohttp.ClientSession(timeout=timeout) as session:
-            async with session.post(base_url + 'initiate', json=request) as resp:
-                widgets = [
-                    'Updating: ', progressbar.Percentage(),
-                    ' ', progressbar.Bar(marker=progressbar.AnimatedMarker(fill='#'), left='[', right=']'),
-                    ' ', progressbar.ETA(),
-                    ' ', progressbar.FileTransferSpeed(),
-                ]
-                bar = progressbar.ProgressBar(widgets=widgets, max_value=expected_size)
-                bar.start()
-                while True:
-                    async with session.get(base_url + 'status') as resp:
-                        response = await resp.json()
-                        bar.update(response['progress'])
+        try:
+            timeout = aiohttp.ClientTimeout(total=None, connect=15)
+            async with aiohttp.ClientSession(timeout=timeout) as session:
+                async with session.post(base_url + 'initiate', json=request) as resp:
+                    task_id = progress.add_task("Updating", filename="update.bin", total=expected_size)
+                    while True:
+                        async with session.get(base_url + 'status') as resp:
+                            response = await resp.json()
+                            completed = response['progress']
+                            progress.update(task_id, completed=completed)
 
-                        if response['progress'] == expected_size:
-                            bar.finish()
-                            break
+                            if completed == expected_size:
+                                break
 
-                    await asyncio.sleep(0.1)
+                        await asyncio.sleep(0.1)
 
-    except Exception as e:
-        print("Timeout")
-        pass
+        except Exception as e:
+            print(e)
+            progress.print("Update timed out")
+            pass
 
-    await runner.cleanup()
-    return
+        await runner.cleanup()
+        return
 
 
 async def update(request):

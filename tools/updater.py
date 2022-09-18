@@ -17,6 +17,8 @@ from rich.progress import (
     TransferSpeedColumn,
 )
 
+update_file = '../Build/ESPresso.bin'
+
 def get_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.settimeout(0)
@@ -31,7 +33,7 @@ def get_ip():
 
 
 async def initiate():
-    expected_size = os.path.getsize('update.bin')
+    expected_size = os.path.getsize(update_file)
 
     with Progress(
             TextColumn("[bold blue]{task.fields[filename]}", justify="right"),
@@ -81,7 +83,7 @@ async def initiate():
 
 
 async def update(request):
-    return web.FileResponse('./update.bin')
+    return web.FileResponse(update_file)
 
 
 async def shutdown(server, app):

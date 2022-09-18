@@ -15,7 +15,6 @@ bool Updater::initiate(const UpdaterEventLoop::UpdateRequest& request)
 
 void Updater::cleanup()
 {
-	esp_http_client_close(m_client);
 	esp_http_client_cleanup(m_client);
 
 	m_status.progress = -1;
@@ -64,6 +63,7 @@ void Updater::run(const UpdaterEventLoop::UpdateRequest& request)
 		if (data_read < 0)
 		{
 			printf("Update: data read error\n");
+			esp_ota_abort(update_handle);
 			cleanup();
 			return;
 		}
@@ -86,7 +86,7 @@ void Updater::run(const UpdaterEventLoop::UpdateRequest& request)
 					esp_app_desc_t invalid_app_info;
 
 					if (esp_ota_get_partition_description(last_invalid_app, &invalid_app_info) == ESP_OK)
-						printf("Last invalid firmware version: %s\n", invalid_app_info.version);
+						printf("Update: Last invalid firmware version: %s\n", invalid_app_info.version);
 
 					// check current version with last invalid partition
 					if (last_invalid_app != nullptr)
@@ -137,7 +137,7 @@ void Updater::run(const UpdaterEventLoop::UpdateRequest& request)
 		{
 			if (errno == ECONNRESET || errno == ENOTCONN)
 			{
-				printf("Connection closed, errno = %d\n", errno);
+				printf("Update: Connection closed, errno = %d\n", errno);
 				break;
 			}
 

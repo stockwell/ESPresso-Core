@@ -18,7 +18,7 @@ PumpController::PumpController()
 	m_pid.SetOutputLimits(20.0f, 100.0f);
 	m_pid.SetMode(QuickPID::Control::automatic);
 	m_pid.SetSampleTimeUs(50 * 1000);
-	m_pid.SetProportionalMode(QuickPID::pMode::pOnErrorMeas);
+	m_pid.SetProportionalMode(QuickPID::pMode::pOnMeas);
 }
 
 void PumpController::tick()

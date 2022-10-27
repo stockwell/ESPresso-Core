@@ -24,6 +24,7 @@ namespace
 
 		GetBoilerState,
 
+		ClearInhibit,
 		Shutdown,
 	};
 }
@@ -41,6 +42,11 @@ float BoilerEventLoop::getTemperature(TemperatureTypes type)
 void BoilerEventLoop::setPIDTerms(BoilerController::PIDTerms terms)
 {
 	eventPost(Events::SetPIDTerms, sizeof(terms), &terms);
+}
+
+void BoilerEventLoop::clearInhibit()
+{
+	eventPost(Events::ClearInhibit);
 }
 
 void BoilerEventLoop::shutdown()
@@ -128,6 +134,10 @@ void BoilerEventLoop::eventHandler(int32_t eventId, void* data)
 		EventLoopHelpers::setResponse(m_controller.getState(), data);
 		break;
 	}
+
+	case Events::ClearInhibit:
+		m_controller.clearInhibit();
+		break;
 
 	case Events::Shutdown:
 		m_timer->stop();

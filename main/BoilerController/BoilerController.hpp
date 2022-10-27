@@ -7,6 +7,7 @@
 
 #include "QuickPID.h"
 
+#include <chrono>
 #include <memory>
 
 class BoilerController
@@ -17,6 +18,7 @@ public:
 		Heating,
 		Ready,
 		Brewing,
+		Inhibited,
 	};
 
 	using PIDTerms = std::tuple<float, float, float>;
@@ -36,6 +38,8 @@ public:
 
 	void setPIDTerms(PIDTerms terms);
 	PIDTerms getPIDTerms() const 		{ return m_terms; }
+
+	void clearInhibit()					{ m_inhibit = false; }
 
 	void tick();
 	void shutdown();
@@ -62,4 +66,6 @@ private:
 	PIDTerms	m_terms;
 
 	PumpEventLoop* m_pumpAPI;
+
+	std::chrono::time_point<std::chrono::system_clock>	m_heatedTime;
 };

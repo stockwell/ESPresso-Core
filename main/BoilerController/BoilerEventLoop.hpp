@@ -20,21 +20,22 @@ public:
 		SteamTargetTemp,
 	};
 
-	void						setTemperature(TemperatureTypes type, float temperature);
-	float						getTemperature(TemperatureTypes type);
+	void							setTemperature(TemperatureTypes type, float temperature);
+	float							getTemperature(TemperatureTypes type);
 
-	void						setPIDTerms(BoilerController::PIDTerms terms);
-	BoilerController::PIDTerms	getPIDTerms();
+	void							setPIDTerms(BoilerController::PIDTerms terms);
+	BoilerController::PIDTerms		getPIDTerms();
 
-	BoilerController::BoilerState getState();
+	BoilerController::BoilerState	getState();
 
-	void 						shutdown();
+	void 							clearInhibit();
+	void 							shutdown();
 
 protected:
-	void						eventHandler(int32_t eventId, void* data) override;
+	void							eventHandler(int32_t eventId, void* data) override;
 
 private:
-	std::unique_ptr<Timer>		m_timer;
+	std::unique_ptr<Timer>			m_timer;
 
-	BoilerController			m_controller;
+	BoilerController				m_controller;
 };

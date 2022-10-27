@@ -310,6 +310,19 @@ static esp_err_t update_status_get_handler(httpd_req_t* req)
 	return ESP_OK;
 }
 
+static esp_err_t clear_inhibit_post_handler(httpd_req_t* req)
+{
+	if (auto err = validate_post_request(req); err != ESP_OK)
+		return err;
+
+	auto* serverCtx = ((ServerCtx*)(req->user_ctx));
+
+	serverCtx->boilerAPI->clearInhibit();
+
+	httpd_resp_sendstr(req, "");
+	return ESP_OK;
+}
+
 static void registerURIHandler(httpd_handle_t server, const char* uri, http_method method, esp_err_t (*handler)(httpd_req_t *r), ServerCtx* ctx)
 {
 	httpd_uri_t http_uri =
@@ -345,6 +358,8 @@ RESTServer::RESTServer(BoilerEventLoop* boiler, PressureEventLoop* pressure, Pum
 	registerURIHandler(server, "/api/v1/temp/raw", HTTP_POST, temperature_data_post_handler, serverCtx);
 	registerURIHandler(server, "/api/v1/pid/terms", HTTP_GET, pid_terms_get_handler, serverCtx);
 	registerURIHandler(server, "/api/v1/pid/terms", HTTP_POST, pid_terms_post_handler, serverCtx);
+
+	registerURIHandler(server, "/api/v1/boiler/clear-inhibit", HTTP_POST, clear_inhibit_post_handler, serverCtx);
 
 	registerURIHandler(server, "/api/v1/pressure/raw", HTTP_GET, pressure_data_get_handler, serverCtx);
 	registerURIHandler(server, "/api/v1/pressure/raw", HTTP_POST, pressure_data_post_handler, serverCtx);

@@ -1,8 +1,6 @@
 #pragma once
 
 #include <memory>
-#include <chrono>
-
 
 #include "Lib/RollingAverage.hpp"
 
@@ -40,9 +38,6 @@ public:
 
 	PIDTerms getPIDTerms() const { return m_terms; }
 	void setPIDTerms(PIDTerms terms);
-
-private:
-	void setPressureFromProfile();
 
 private:
 	QuickPID	m_pid;

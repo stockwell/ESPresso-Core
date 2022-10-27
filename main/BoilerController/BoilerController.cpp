@@ -79,7 +79,6 @@ void BoilerController::setPIDTerms(PIDTerms terms)
 
 void BoilerController::tick()
 {
-
 	if (m_inhibit)
 		return;
 

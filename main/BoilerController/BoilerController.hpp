@@ -67,5 +67,5 @@ private:
 
 	PumpEventLoop* m_pumpAPI;
 
-	std::chrono::time_point<std::chrono::system_clock>	m_heatedTime;
+	std::chrono::time_point<std::chrono::steady_clock>	m_heatedTime;
 };

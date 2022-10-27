@@ -93,7 +93,7 @@ void BoilerController::tick()
 		m_state = BoilerState::Brewing;
 		m_pumpAPI->startPump();
 	}
-	else
+	else if (m_state == BoilerState::Brewing)
 	{
 		m_state = BoilerState::Heating;
 		m_pumpAPI->stopPump();
@@ -105,17 +105,23 @@ void BoilerController::tick()
 		{
 			m_state = BoilerState::Heating;
 		}
-		else
+		else if (m_state != BoilerState::Ready)
 		{
 			m_state = BoilerState::Ready;
-			m_heatedTime = std::chrono::system_clock::now();
+			m_heatedTime = std::chrono::steady_clock::now();
 		}
 
-		using namespace std::chrono;
-		auto elapsedTime = duration_cast<minutes>(system_clock::now() - m_heatedTime);
+		if (m_state == BoilerState::Ready)
+		{
+			using namespace std::chrono;
+			auto elapsedTime = duration_cast<minutes>(steady_clock::now() - m_heatedTime);
 
-		if (elapsedTime > 90min)
-			shutdown();
+			if (elapsedTime > 90min)
+			{
+				shutdown();
+				return;
+			}
+		}
 	}
 
 	if (gpio_get_level(m_steamSwitchGPIO) == 0)

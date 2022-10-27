@@ -101,7 +101,7 @@ void BoilerController::tick()
 
 	if (m_state != BoilerState::Brewing)
 	{
-		if (m_currentTemp < 85)
+		if (m_currentTemp < 90)
 		{
 			m_state = BoilerState::Heating;
 		}

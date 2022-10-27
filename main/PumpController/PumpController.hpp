@@ -60,6 +60,4 @@ private:
 
 	PumpState	m_state				= PumpState::Stopped;
 	PIDTerms 	m_terms;
-
-	std::chrono::time_point<std::chrono::system_clock>	m_startTime;
 };

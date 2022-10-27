@@ -18,7 +18,7 @@ PumpController::PumpController()
 	m_pid.SetOutputLimits(20.0f, 100.0f);
 	m_pid.SetMode(QuickPID::Control::automatic);
 	m_pid.SetSampleTimeUs(50 * 1000);
-	m_pid.SetProportionalMode(QuickPID::pMode::pOnMeas);
+	m_pid.SetProportionalMode(QuickPID::pMode::pOnErrorMeas);
 }
 
 void PumpController::tick()
@@ -26,7 +26,7 @@ void PumpController::tick()
 	if (m_inhibit || m_state != PumpState::Running)
 		return;
 
-	setPressureFromProfile();
+	m_targetPressure = m_brewPressure;
 
 	if (m_pid.Ready())
 	{
@@ -37,8 +37,6 @@ void PumpController::tick()
 
 		if (duty < 0x1000)
 			duty = 0;
-
-		//printf("m_targetPressure = %0.2f / m_duty = %02x\n", m_targetPressure, duty);
 
 		m_triac.setDuty(static_cast<int>(duty));
 	}
@@ -82,12 +80,7 @@ void PumpController::start()
 		return;
 
 	const auto& [Kp, Ki, Kd] = m_terms;
-
 	m_pid.SetTunings(Kp * 0.1f, Ki * 0.1f, Kd * 0.1f);
-
-	m_startTime = std::chrono::system_clock::now();
-
-	setPressureFromProfile();
 
 	m_state = PumpState::Running;
 
@@ -112,31 +105,4 @@ void PumpController::stop()
 	m_currentPressure = pressureTemp;
 
 	m_triac.setDuty(0);
-}
-
-void PumpController::setPressureFromProfile()
-{
-	using namespace std::chrono;
-
-	auto elapsedTime = duration_cast<milliseconds>(system_clock::now() - m_startTime);
-
-	// 0->8s pre-infusion
-	// 8s->13s ramp up to full pressure
-
-	if (elapsedTime < 8s)
-	{
-		m_targetPressure = 0.33f * m_brewPressure;
-	}
-	else if (elapsedTime < 13s)
-	{
-		m_targetPressure = 0.33f * m_brewPressure + ((elapsedTime.count() - 8000) / 5000.0f) * (m_brewPressure * 0.66f);
-	}
-	else if (elapsedTime < 30s)
-	{
-		m_targetPressure = m_brewPressure;
-	}
-	else
-	{
-		m_targetPressure = 0.0f;
-	}
 }

@@ -23,6 +23,8 @@ public:
 	void	setPressure(PressureTypes type, float pressure);
 	float	getPressure(PressureTypes type);
 
+	void	setManualDuty(float percent);
+
 	PumpController::PumpState getState();
 	PumpController::PIDTerms  getPIDTerms();
 

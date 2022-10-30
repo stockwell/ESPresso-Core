@@ -14,6 +14,8 @@ namespace
 		GetTargetPressure,
 		GetBrewPressure,
 
+		SetManualDuty,
+
 		GetPumpState,
 
 		GetPIDTerms,
@@ -34,6 +36,11 @@ void PumpEventLoop::setPressure(PressureTypes type, float pressure)
 float PumpEventLoop::getPressure(PressureTypes type)
 {
 	return getFromEventLoop(Events::GetCurrentPressure + type, new std::promise<float>());
+}
+
+void PumpEventLoop::setManualDuty(float percent)
+{
+	eventPost(Events::SetManualDuty, sizeof percent, &percent);
 }
 
 PumpController::PumpState PumpEventLoop::getState()
@@ -102,6 +109,10 @@ void PumpEventLoop::eventHandler(int32_t eventId, void* data)
 
 	case Events::GetBrewPressure:
 		EventLoopHelpers::setResponse(m_controller.getBrewPressure(), data);
+		break;
+
+	case Events::SetManualDuty:
+		m_controller.setManualDuty(*static_cast<float*>(data));
 		break;
 
 	case Events::GetPumpState:

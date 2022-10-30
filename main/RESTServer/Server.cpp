@@ -323,6 +323,35 @@ static esp_err_t clear_inhibit_post_handler(httpd_req_t* req)
 	return ESP_OK;
 }
 
+static esp_err_t manual_control_post_handler(httpd_req_t* req)
+{
+	if (auto err = validate_post_request(req); err != ESP_OK)
+		return err;
+
+	auto* serverCtx = ((ServerCtx*)(req->user_ctx));
+
+	cJSON* root = cJSON_Parse(serverCtx->buffer.data());
+
+	if (! root)
+	{
+		httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, nullptr);
+		return ESP_FAIL;
+	}
+
+	const auto* duty = cJSON_GetObjectItem(root, "Duty");
+
+	if (duty == nullptr)
+	{
+		httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, nullptr);
+		return ESP_FAIL;
+	}
+
+	serverCtx->pumpAPI->setManualDuty(duty->valuedouble);
+
+	httpd_resp_sendstr(req, "");
+	return ESP_OK;
+}
+
 static void registerURIHandler(httpd_handle_t server, const char* uri, http_method method, esp_err_t (*handler)(httpd_req_t *r), ServerCtx* ctx)
 {
 	httpd_uri_t http_uri =
@@ -360,6 +389,7 @@ RESTServer::RESTServer(BoilerEventLoop* boiler, PressureEventLoop* pressure, Pum
 	registerURIHandler(server, "/api/v1/pid/terms", HTTP_POST, pid_terms_post_handler, serverCtx);
 
 	registerURIHandler(server, "/api/v1/boiler/clear-inhibit", HTTP_POST, clear_inhibit_post_handler, serverCtx);
+	registerURIHandler(server, "/api/v1/pump/manual-control", HTTP_POST, manual_control_post_handler, serverCtx);
 
 	registerURIHandler(server, "/api/v1/pressure/raw", HTTP_GET, pressure_data_get_handler, serverCtx);
 	registerURIHandler(server, "/api/v1/pressure/raw", HTTP_POST, pressure_data_post_handler, serverCtx);

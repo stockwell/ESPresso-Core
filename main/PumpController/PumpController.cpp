@@ -28,6 +28,19 @@ void PumpController::tick()
 
 	m_targetPressure = m_brewPressure;
 
+	if (m_manualControl)
+	{
+		auto duty = static_cast<uint16_t>((m_pumpDuty / 100) * 0xEFFF);
+
+		if (duty < 0x1000)
+			duty = 0;
+		else
+			duty += 0x1000;
+
+		m_triac.setDuty(static_cast<int>(duty));
+		return;
+	}
+
 	if (m_pid.Ready())
 	{
 		m_pid.Compute();
@@ -69,6 +82,12 @@ void PumpController::setPIDTerms(PIDTerms terms)
 	auto [Kp, Ki, Kd] = terms;
 
 	m_pid.SetTunings(Kp * 0.1f, Ki * 0.1f, Kd * 0.1f);
+}
+
+void PumpController::setManualDuty(float percent)
+{
+	m_manualControl = true;
+	m_pumpDuty = percent;
 }
 
 void PumpController::start()

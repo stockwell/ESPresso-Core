@@ -29,6 +29,7 @@ public:
 
 	void updateCurrentPressure(const float pressure);
 	void setBrewPressure(float pressure);
+	void setManualDuty(float percent);
 
 	float getCurrentPressure() const { return m_currentPressure; }
 	float getTargetPressure() const { return m_targetPressure; }
@@ -52,6 +53,7 @@ private:
 	float 		m_pumpDuty			= 0.0f;
 
 	bool 		m_inhibit 			= false;
+	bool 		m_manualControl		= false;
 
 	PumpState	m_state				= PumpState::Stopped;
 	PIDTerms 	m_terms;

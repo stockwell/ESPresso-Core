@@ -34,6 +34,7 @@ public:
 	float getCurrentPressure() const { return m_currentPressure; }
 	float getTargetPressure() const { return m_targetPressure; }
 	float getBrewPressure() const { return m_brewPressure; }
+	float getPumpDuty() const { return m_pumpDuty; }
 
 	PumpState getState() const { return m_state; }
 

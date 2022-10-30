@@ -24,6 +24,7 @@ public:
 	float	getPressure(PressureTypes type);
 
 	void	setManualDuty(float percent);
+	float	getManualDuty();
 
 	PumpController::PumpState getState();
 	PumpController::PIDTerms  getPIDTerms();

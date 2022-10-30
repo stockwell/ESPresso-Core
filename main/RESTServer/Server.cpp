@@ -162,6 +162,7 @@ static esp_err_t pressure_data_get_handler(httpd_req_t *req)
 	cJSON_AddNumberToObject(root, "current", pumpAPI->getPressure(PumpEventLoop::CurrentPressure));
 	cJSON_AddNumberToObject(root, "target", pumpAPI->getPressure(PumpEventLoop::TargetPressure));
 	cJSON_AddNumberToObject(root, "brew", pumpAPI->getPressure(PumpEventLoop::BrewTargetPressure));
+	cJSON_AddNumberToObject(root, "manual-duty", pumpAPI->getManualDuty());
 
 	cJSON_AddNumberToObject(root, "state",  static_cast<int>(pumpAPI->getState()));
 
@@ -260,6 +261,7 @@ static esp_err_t update_init_post_handler(httpd_req_t* req)
 
 	if (! url || ! uuid || ! size)
 	{
+		cJSON_Delete(root);
 		httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, nullptr);
 		return ESP_FAIL;
 	}
@@ -271,6 +273,7 @@ static esp_err_t update_init_post_handler(httpd_req_t* req)
 
 	if (! serverCtx->updaterEventLoop->initiateUpdate(request))
 	{
+		cJSON_Delete(root);
 		httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, nullptr);
 		return ESP_FAIL;
 	}
@@ -282,6 +285,7 @@ static esp_err_t update_init_post_handler(httpd_req_t* req)
 	serverCtx->temperatureAPI->shutdown();
 
 	httpd_resp_sendstr(req, "Update Initiated");
+	cJSON_Delete(root);
 
 	return ESP_OK;
 }
@@ -342,11 +346,13 @@ static esp_err_t manual_control_post_handler(httpd_req_t* req)
 
 	if (duty == nullptr)
 	{
+		cJSON_Delete(root);
 		httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, nullptr);
 		return ESP_FAIL;
 	}
 
 	serverCtx->pumpAPI->setManualDuty(duty->valuedouble);
+	cJSON_Delete(root);
 
 	httpd_resp_sendstr(req, "");
 	return ESP_OK;

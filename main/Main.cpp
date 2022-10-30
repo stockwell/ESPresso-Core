@@ -18,20 +18,22 @@ static void mainTask(void* pvParameter)
 	(void)pvParameter;
 
 	auto ret = nvs_flash_init();
-	if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+	if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND)
+	{
 		ESP_ERROR_CHECK(nvs_flash_erase());
 		ret = nvs_flash_init();
 	}
+
 	ESP_ERROR_CHECK(esp_netif_init());
 	ESP_ERROR_CHECK(esp_event_loop_create_default());
 
-	auto pumpEventLoop = std::make_unique<PumpEventLoop>();
-	auto pressureEventLoop = std::make_unique<PressureEventLoop>(pumpEventLoop.get());
+	auto pumpEventLoop = new PumpEventLoop();
+	auto pressureEventLoop = new PressureEventLoop(pumpEventLoop);
 
-	auto boilerEventLoop = std::make_unique<BoilerEventLoop>(pumpEventLoop.get());
-	auto temperatureEventLoop = std::make_unique<TemperatureEventLoop>(boilerEventLoop.get());
+	auto boilerEventLoop = new BoilerEventLoop(pumpEventLoop);
+	auto temperatureEventLoop = new TemperatureEventLoop(boilerEventLoop);
 
-	auto restServer = std::make_unique<RESTServer>(boilerEventLoop.get(), pressureEventLoop.get(), pumpEventLoop.get(), temperatureEventLoop.get());
+	auto restServer = new RESTServer(boilerEventLoop, pressureEventLoop, pumpEventLoop, temperatureEventLoop);
 
 	boilerEventLoop->setTemperature(BoilerEventLoop::BrewTargetTemp, 93.1f);
 	boilerEventLoop->setTemperature(BoilerEventLoop::SteamTargetTemp, 140.0f);
@@ -39,8 +41,7 @@ static void mainTask(void* pvParameter)
 	Wifi::InitWifi(Wifi::WifiMode::STA);
 	Wifi::InitMDNS();
 
-	while (1)
-		vTaskDelay(portMAX_DELAY);
+	vTaskDelete(nullptr);
 }
 
 extern "C" void app_main()

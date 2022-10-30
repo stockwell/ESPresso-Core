@@ -19,6 +19,7 @@ public:
 		Ready,
 		Brewing,
 		Inhibited,
+		Idle,
 	};
 
 	using PIDTerms = std::tuple<float, float, float>;

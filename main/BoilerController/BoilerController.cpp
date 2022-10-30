@@ -103,7 +103,10 @@ void BoilerController::tick()
 	{
 		if (m_currentTemp < 90)
 		{
-			m_state = BoilerState::Heating;
+			if (m_currentTemp < 50)
+				m_state = BoilerState::Idle;
+			else
+				m_state = BoilerState::Heating;
 		}
 		else if (m_state != BoilerState::Ready)
 		{

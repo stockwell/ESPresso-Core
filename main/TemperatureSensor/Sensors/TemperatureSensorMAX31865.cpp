@@ -1,4 +1,5 @@
 #include "TemperatureSensorMAX31865.hpp"
+
 #include "driver/gpio.h"
 
 namespace

@@ -38,3 +38,5 @@ sdkconfig.old
 */Build
 .idea
 cmake-build*
+
+managed_components

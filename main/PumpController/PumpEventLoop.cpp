@@ -172,7 +172,7 @@ void PumpEventLoop::eventHandler(int32_t eventId, void* data)
 		break;
 
 	default:
-		printf("Unhandled event! %d\n", eventId);
+		printf("Unhandled event! %ld\n", eventId);
 		break;
 	}
 }

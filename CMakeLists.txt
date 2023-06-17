@@ -10,9 +10,8 @@ set(CMAKE_ASM_COMPILER xtensa-esp32-elf-as)
 set(IDF_TARGET esp32s3)
 
 list(APPEND EXTRA_COMPONENT_DIRS
-        src
-        vendor/QuickPID
-        vendor/ESP32-MAX31865
+    vendor/QuickPID
+    vendor/ESP32-MAX31865
 )
 
 if (NOT DEFINED PROJECT_NAME)

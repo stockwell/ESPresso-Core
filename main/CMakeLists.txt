@@ -25,6 +25,7 @@ set(REQUIRES
         json
         mdns
         nvs_flash
+        driver
         QuickPID
 )
 

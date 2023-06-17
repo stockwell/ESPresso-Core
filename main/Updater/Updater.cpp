@@ -1,6 +1,7 @@
 #include "Updater.hpp"
 
 #include "esp_http_client.h"
+#include "esp_app_format.h"
 
 bool Updater::initiate(const UpdaterEventLoop::UpdateRequest& request)
 {

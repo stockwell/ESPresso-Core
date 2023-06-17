@@ -19,7 +19,7 @@ namespace
 	constexpr auto kSoftAP_channel				= 6;
 
 	const char* TAG = "Wifi";
-	static xSemaphoreHandle s_semaphoreGetIP;
+	static SemaphoreHandle_t s_semaphoreGetIP;
 }
 
 static void onWifiDisconnect(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data)

@@ -127,9 +127,9 @@ void BoilerController::tick()
 		}
 	}
 
-	if (gpio_get_level(m_steamSwitchGPIO) == 0)
-		m_targetTemp = m_steamTemp;
-	else
+//	if (gpio_get_level(m_steamSwitchGPIO) == 0)
+//		m_targetTemp = m_steamTemp;
+//	else
 		m_targetTemp = m_brewTemp;
 
 	if (m_pid.Ready())

@@ -14,6 +14,9 @@ namespace
 		GetTargetPressure,
 		GetBrewPressure,
 
+		SetManualMode,
+		GetManualMode,
+
 		SetManualDuty,
 		GetManualDuty,
 
@@ -47,6 +50,16 @@ void PumpEventLoop::setManualDuty(float percent)
 float PumpEventLoop::getManualDuty()
 {
 	return getFromEventLoop(Events::GetManualDuty, new std::promise<float>());
+}
+
+void PumpEventLoop::setManualMode(bool enable)
+{
+	eventPost(Events::SetManualMode, sizeof enable, &enable);
+}
+
+bool PumpEventLoop::getManualMode()
+{
+	return getFromEventLoop(Events::GetManualMode, new std::promise<bool>());
 }
 
 PumpController::PumpState PumpEventLoop::getState()
@@ -123,6 +136,14 @@ void PumpEventLoop::eventHandler(int32_t eventId, void* data)
 
 	case Events::GetManualDuty:
 		EventLoopHelpers::setResponse(m_controller.getPumpDuty(), data);
+		break;
+
+	case Events::SetManualMode:
+		m_controller.setManualMode(*static_cast<bool*>(data));
+		break;
+
+	case Events::GetManualMode:
+		EventLoopHelpers::setResponse(m_controller.getManualMode(), data);
 		break;
 
 	case Events::GetPumpState:

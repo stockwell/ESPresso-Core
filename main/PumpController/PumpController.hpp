@@ -30,11 +30,13 @@ public:
 	void updateCurrentPressure(const float pressure);
 	void setBrewPressure(float pressure);
 	void setManualDuty(float percent);
+	void setManualMode(bool enable);
 
 	float getCurrentPressure() const { return m_currentPressure; }
 	float getTargetPressure() const { return m_targetPressure; }
 	float getBrewPressure() const { return m_brewPressure; }
 	float getPumpDuty() const { return m_pumpDuty; }
+	bool  getManualMode() const { return m_manualControl; }
 
 	PumpState getState() const { return m_state; }
 
@@ -45,7 +47,8 @@ private:
 	QuickPID	m_pid;
 	TRIAC		m_triac;
 
-	RollingAverage<float, float, 8> m_averageDuty;
+	RollingAverage<float, float, 4> m_averageDuty;
+	RollingAverage<float, float, 4> m_averagePressure;
 
 	float		m_currentPressure	= 0.0f;
 	float		m_targetPressure	= 0.0f;

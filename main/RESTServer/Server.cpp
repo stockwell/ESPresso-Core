@@ -163,6 +163,7 @@ static esp_err_t pressure_data_get_handler(httpd_req_t *req)
 	cJSON_AddNumberToObject(root, "target", pumpAPI->getPressure(PumpEventLoop::TargetPressure));
 	cJSON_AddNumberToObject(root, "brew", pumpAPI->getPressure(PumpEventLoop::BrewTargetPressure));
 	cJSON_AddNumberToObject(root, "manual-duty", pumpAPI->getManualDuty());
+	cJSON_AddBoolToObject(root, "manual-mode", pumpAPI->getManualMode());
 
 	cJSON_AddNumberToObject(root, "state",  static_cast<int>(pumpAPI->getState()));
 
@@ -343,8 +344,9 @@ static esp_err_t manual_control_post_handler(httpd_req_t* req)
 	}
 
 	const auto* duty = cJSON_GetObjectItem(root, "Duty");
+	const auto* enabled = cJSON_GetObjectItem(root, "ManualControl");
 
-	if (duty == nullptr)
+	if (duty == nullptr || enabled == nullptr)
 	{
 		cJSON_Delete(root);
 		httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, nullptr);
@@ -352,6 +354,8 @@ static esp_err_t manual_control_post_handler(httpd_req_t* req)
 	}
 
 	serverCtx->pumpAPI->setManualDuty(duty->valuedouble);
+	serverCtx->pumpAPI->setManualMode(enabled->type == cJSON_True);
+
 	cJSON_Delete(root);
 
 	httpd_resp_sendstr(req, "");

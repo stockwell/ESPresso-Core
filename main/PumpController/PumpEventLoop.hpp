@@ -26,6 +26,9 @@ public:
 	void	setManualDuty(float percent);
 	float	getManualDuty();
 
+	void	setManualMode(bool enable);
+	bool	getManualMode();
+
 	PumpController::PumpState getState();
 	PumpController::PIDTerms  getPIDTerms();
 

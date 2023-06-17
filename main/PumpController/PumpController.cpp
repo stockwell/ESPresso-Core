@@ -17,8 +17,22 @@ PumpController::PumpController()
 {
 	m_pid.SetOutputLimits(20.0f, 100.0f);
 	m_pid.SetMode(QuickPID::Control::automatic);
-	m_pid.SetSampleTimeUs(50 * 1000);
-	m_pid.SetProportionalMode(QuickPID::pMode::pOnErrorMeas);
+	m_pid.SetSampleTimeUs(100 * 1000);
+	m_pid.SetProportionalMode(QuickPID::pMode::pOnError);
+}
+
+#include <cmath>
+#include <algorithm>
+
+static uint16_t calcDuty(float duty)
+{
+	constexpr float a = -0.0078125;
+	constexpr float b = 1.802678571;
+	constexpr float c = -2.321428571;
+
+	const auto y = std::clamp<float>((a * pow(duty, 2.0f)) + (b * duty) + c, 0.0f, 100.0f);
+
+	return static_cast<uint16_t>((y / 100) * 0xEFFF);
 }
 
 void PumpController::tick()
@@ -28,31 +42,30 @@ void PumpController::tick()
 
 	m_targetPressure = m_brewPressure;
 
+	uint16_t duty;
+
 	if (m_manualControl)
 	{
-		auto duty = static_cast<uint16_t>((m_pumpDuty / 100) * 0xEFFF);
-
-		if (duty < 0x1000)
-			duty = 0;
-		else
-			duty += 0x1000;
-
-		m_triac.setDuty(static_cast<int>(duty));
-		return;
+		duty = calcDuty(m_pumpDuty);
 	}
-
-	if (m_pid.Ready())
+	else if (m_pid.Ready())
 	{
 		m_pid.Compute();
 		m_averageDuty(m_pumpDuty);
 
-		auto duty = static_cast<uint16_t>((m_averageDuty.get()/100) * 0xFFFF);
-
-		if (duty < 0x1000)
-			duty = 0;
-
-		m_triac.setDuty(static_cast<int>(duty));
+		duty = calcDuty(m_averageDuty.get());
 	}
+	else
+	{
+		return;
+	}
+
+	if (duty < 0x1000)
+		duty = 0;
+	else
+		duty += 0x1000;
+
+	m_triac.setDuty(static_cast<int>(duty));
 }
 
 void PumpController::shutdown()
@@ -64,7 +77,9 @@ void PumpController::shutdown()
 
 void PumpController::updateCurrentPressure(const float pressure)
 {
-	m_currentPressure = pressure;
+	m_averagePressure(pressure);
+
+	m_currentPressure = m_averagePressure.get();
 }
 
 void PumpController::setBrewPressure(const float pressure)
@@ -81,12 +96,30 @@ void PumpController::setPIDTerms(PIDTerms terms)
 
 	auto [Kp, Ki, Kd] = terms;
 
-	m_pid.SetTunings(Kp * 0.1f, Ki * 0.1f, Kd * 0.1f);
+	m_pid.SetTunings(Kp * 0.01f, Ki * 0.01f, Kd * 0.01f);
+}
+
+void PumpController::setManualMode(bool enable)
+{
+	if (m_manualControl == enable)
+		return;
+
+	m_manualControl = enable;
+
+	m_pid.SetMode(enable ? QuickPID::Control::manual : QuickPID::Control::automatic);
 }
 
 void PumpController::setManualDuty(float percent)
 {
-	m_manualControl = true;
+	if (m_pumpDuty == percent)
+		return;
+
+	if (! m_manualControl)
+	{
+		m_manualControl = true;
+		m_pid.SetMode(QuickPID::Control::manual);
+	}
+
 	m_pumpDuty = percent;
 }
 

@@ -7,8 +7,8 @@ namespace
 	constexpr auto kLEDC_Timer		= LEDC_TIMER_0;
 	constexpr auto kLEDC_Mode		= LEDC_LOW_SPEED_MODE;
 	constexpr auto kLEDC_Channel	= LEDC_CHANNEL_0;
-	constexpr auto kLEDC_DutyRes	= LEDC_TIMER_10_BIT;
-	constexpr auto kLEDC_Frequency	= 1;
+	constexpr auto kLEDC_DutyRes	= LEDC_TIMER_14_BIT;
+	constexpr auto kLEDC_Frequency	= 2;
 
 }
 

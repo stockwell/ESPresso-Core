@@ -24,7 +24,7 @@ BoilerController::BoilerController(PumpEventLoop* pumpAPI)
 	, m_terms(kDefaultKp, kDefaultKi, kDefaultKd)
 	, m_pumpAPI(pumpAPI)
 {
-	m_pid.SetOutputLimits(0, 1024);
+	m_pid.SetOutputLimits(0, 1 << 10);
 	m_pid.SetSampleTimeUs(50 * 1000);
 	m_pid.SetMode(QuickPID::Control::automatic);
 	m_pid.SetProportionalMode(QuickPID::pMode::pOnErrorMeas);
@@ -135,7 +135,7 @@ void BoilerController::tick()
 	if (m_pid.Ready())
 	{
 		m_pid.Compute();
-		m_ssr.update(static_cast<int>(m_outputPower));
+		m_ssr.update(static_cast<int>(m_outputPower) << 4);
 	}
 }
 

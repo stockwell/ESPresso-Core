@@ -15,7 +15,7 @@ PumpController::PumpController()
 	, m_triac(kGPIOPin_TRIAC_Gate, kGPIOPin_TRIAC_ZC)
 	, m_terms(kDefaultKp, kDefaultKi, kDefaultKd)
 {
-	m_pid.SetOutputLimits(20.0f, 100.0f);
+	m_pid.SetOutputLimits(40.0f, 100.0f);
 	m_pid.SetMode(QuickPID::Control::automatic);
 	m_pid.SetSampleTimeUs(100 * 1000);
 	m_pid.SetProportionalMode(QuickPID::pMode::pOnError);
@@ -132,7 +132,7 @@ void PumpController::start()
 		return;
 
 	const auto& [Kp, Ki, Kd] = m_terms;
-	m_pid.SetTunings(Kp * 0.1f, Ki * 0.1f, Kd * 0.1f);
+	m_pid.SetTunings(Kp * 0.01f, Ki * 0.01f, Kd * 0.01f);
 
 	m_state = PumpState::Running;
 
